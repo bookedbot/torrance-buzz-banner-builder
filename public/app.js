@@ -14,6 +14,7 @@ const brand = {
 let referenceImage = null;
 let customIconImage = null;
 let customIconDataUrl = null;
+let iconVariant = 0;
 
 const presets = {
   events: {
@@ -70,9 +71,20 @@ function iconGlyph(name) {
 function inferIcon(title = "", notes = "") {
   const t = title.toLowerCase().trim();
   const n = notes.toLowerCase().trim();
-  const combined = `${t} ${n}`;
 
-  // Known Torrance Buzz Weekly sections get deterministic visuals.
+  if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(n)) return "brain";
+  if (/lightning|thunder|bolt|electric|speed|fast/.test(n)) return "lightning";
+  if (/gem|gems|diamond|jewel|treasure/.test(n)) return "gem";
+  if (/compass|map|explore|discovery|mystery|history/.test(n)) return "compass";
+  if (/megaphone|headline|news|breaking|buzz/.test(n)) return "megaphone";
+  if (/calendar|event|festival|concert|weekend/.test(n)) return "calendar";
+  if (/food|restaurant|bite|drink|bottle|dining|eat|wine|cocktail|coffee/.test(n)) return "fork";
+  if (/home|house|housing|real estate|property|mortgage/.test(n)) return "home";
+  if (/alert|warning|traffic|closure|advisory|emergency/.test(n)) return "alert";
+  if (/city|council|government|civic|planning|commission/.test(n)) return "civic";
+  if (/weather|sun|heat|rain|forecast|temperature/.test(n)) return "sun";
+  if (/fun|game|star|play|entertainment/.test(n)) return "star";
+
   if (/^trivia time$/.test(t)) return "brain";
   if (/^the buzz in 60 seconds$/.test(t)) return "lightning";
   if (/^this week'?s big buzz$/.test(t)) return "megaphone";
@@ -84,22 +96,6 @@ function inferIcon(title = "", notes = "") {
   if (/torrance homefront/.test(t)) return "home";
   if (/buzz alerts/.test(t)) return "alert";
 
-  // Design notes can refine an unknown/new banner.
-  if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(n)) return "brain";
-  if (/lightning|thunder|bolt|electric|speed|fast/.test(n)) return "lightning";
-  if (/gem|gems|small business|shop local/.test(n)) return "gem";
-  if (/explained|explain|history|mystery|mysteries|story|stories|places|discover|discovery|explore|guide/.test(n)) return "compass";
-  if (/megaphone|headline|news|breaking|buzz/.test(n)) return "megaphone";
-  if (/calendar|event|festival|concert|weekend/.test(n)) return "calendar";
-  if (/food|restaurant|bite|drink|bottle|dining|eat/.test(n)) return "fork";
-  if (/home|house|housing|real estate|property|mortgage/.test(n)) return "home";
-  if (/alert|warning|traffic|closure|advisory|emergency/.test(n)) return "alert";
-  if (/city|council|government|civic|planning|commission/.test(n)) return "civic";
-  if (/weather|sun|heat|rain|forecast|temperature/.test(n)) return "sun";
-  if (/fun|game|star|play|entertainment/.test(n)) return "star";
-
-  // If notes are generic, infer conservatively from title.
-  if (/explained|history|mystery|stories|places|discover|explore|guide/.test(t)) return "compass";
   if (/event|festival|concert|weekend/.test(t)) return "calendar";
   if (/food|restaurant|bite|drink|bottle|dining/.test(t)) return "fork";
   if (/home|housing|property|real estate/.test(t)) return "home";
@@ -111,43 +107,7 @@ function inferIcon(title = "", notes = "") {
   return "spark";
 }
 
-
-function iconAlternatives(title = "", notes = "") {
-  const primary = inferIcon(title, notes);
-  const t = `${title} ${notes}`.toLowerCase();
-
-  const pools = {
-    brain: ["brain", "star", "spark"],
-    lightning: ["lightning", "megaphone", "spark"],
-    megaphone: ["megaphone", "lightning", "spark"],
-    gem: ["gem", "compass", "spark"],
-    compass: ["compass", "gem", "spark"],
-    calendar: ["calendar", "star", "spark"],
-    fork: ["fork", "spark", "star"],
-    civic: ["civic", "compass", "spark"],
-    home: ["home", "compass", "spark"],
-    alert: ["alert", "lightning", "megaphone"],
-    sun: ["sun", "spark", "star"],
-    star: ["star", "brain", "spark"],
-    spark: ["spark", "megaphone", "compass"]
-  };
-
-  const list = pools[primary] ? [...pools[primary]] : ["spark", "megaphone", "compass"];
-
-  if (/hidden gem|discover|mystery|explore/.test(t) && !list.includes("gem")) list.unshift("gem");
-  if (/buzz|news|headline/.test(t) && !list.includes("megaphone")) list.unshift("megaphone");
-  if (/fast|60 seconds|speed/.test(t) && !list.includes("lightning")) list.unshift("lightning");
-
-  return [...new Set(list)];
-}
-
-function chooseNextIcon() {
-  const options = iconAlternatives($("title").value, $("notes").value);
-  const current = $("icon").value;
-  let index = options.indexOf(current);
-  if (index < 0) index = 0;
-  const next = options[(index + 1) % options.length];
-
+function createNewIconVariation() {
   customIconImage = null;
   customIconDataUrl = null;
   $("customIcon").value = "";
@@ -155,10 +115,12 @@ function chooseNextIcon() {
   $("customIconPreview").src = "";
   $("clearCustomIcon").hidden = true;
 
-  $("icon").value = next;
+  $("icon").value = inferIcon($("title").value, $("notes").value);
+  iconVariant = (iconVariant + 1) % 3;
+
   render();
   saveCurrentState();
-  $("assistStatus").textContent = "New icon created. Click again to try another.";
+  $("assistStatus").textContent = "New visual variation created for the same concept.";
 }
 
 function splitHeadline(title) {
@@ -265,7 +227,7 @@ function drawCustomIcon() {
   return true;
 }
 
-function drawIcon(icon) {
+function drawIcon(icon, variant = 0) {
   const cx = 115;
   const cy = 73;
 
@@ -769,25 +731,85 @@ function drawIcon(icon) {
     ctx.arc(101,56,24,0,Math.PI*2);
     ctx.fill();
   } else if (icon === "fork") {
-    ctx.fillStyle = gold;
-    ctx.beginPath();
-    ctx.roundRect(69, 31, 20, 91, 8);
-    ctx.fill();
+    if (variant === 0) {
+      // Fork + spoon.
+      ctx.fillStyle = gold;
+      ctx.beginPath();
+      ctx.roundRect(69, 31, 20, 91, 8);
+      ctx.fill();
 
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = "#071A47";
-    [73,79,85].forEach(x => ctx.fillRect(x,31,3,28));
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#071A47";
+      [73,79,85].forEach(x => ctx.fillRect(x,31,3,28));
 
-    ctx.fillStyle = lightGold;
-    ctx.beginPath();
-    ctx.ellipse(141, 55, 25, 27, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillRect(134, 56, 14, 66);
+      ctx.fillStyle = lightGold;
+      ctx.beginPath();
+      ctx.ellipse(141, 55, 25, 27, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(134, 56, 14, 66);
 
-    ctx.fillStyle = "rgba(255,255,255,.65)";
-    ctx.beginPath();
-    ctx.ellipse(133,45,9,5,-.4,0,Math.PI*2);
-    ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.65)";
+      ctx.beginPath();
+      ctx.ellipse(133,45,9,5,-.4,0,Math.PI*2);
+      ctx.fill();
+    } else if (variant === 1) {
+      // Wine bottle + glass.
+      const bottle = ctx.createLinearGradient(74,28,112,121);
+      bottle.addColorStop(0,"#FFD95F");
+      bottle.addColorStop(.45,"#F2A11C");
+      bottle.addColorStop(1,"#A94D05");
+      ctx.fillStyle = bottle;
+      ctx.beginPath();
+      ctx.roundRect(72,52,32,66,8);
+      ctx.fill();
+      ctx.fillRect(81,28,14,30);
+
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "#FFD65A";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(135,44);
+      ctx.bezierCurveTo(124,58,127,79,143,83);
+      ctx.bezierCurveTo(159,79,162,58,151,44);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(143,83);
+      ctx.lineTo(143,113);
+      ctx.moveTo(129,113);
+      ctx.lineTo(157,113);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255,255,255,.55)";
+      ctx.beginPath();
+      ctx.ellipse(84,61,8,4,-.4,0,Math.PI*2);
+      ctx.fill();
+    } else {
+      // Plate + cloche.
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#F8EED0";
+      ctx.beginPath();
+      ctx.ellipse(114,100,52,14,0,0,Math.PI*2);
+      ctx.fill();
+
+      ctx.fillStyle = gold;
+      ctx.beginPath();
+      ctx.arc(114,76,38,Math.PI,0);
+      ctx.lineTo(152,76);
+      ctx.lineTo(76,76);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#FFD65A";
+      ctx.beginPath();
+      ctx.arc(114,36,8,0,Math.PI*2);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(255,255,255,.58)";
+      ctx.beginPath();
+      ctx.ellipse(99,55,17,5,-.3,0,Math.PI*2);
+      ctx.fill();
+    }
   } else if (icon === "civic") {
     ctx.fillStyle = gold;
     ctx.beginPath();
@@ -845,7 +867,7 @@ function render() {
   ctx.clearRect(0, 0, 1200, 150);
   drawMasterBackground();
   drawAccent(accent);
-  if (!drawCustomIcon()) drawIcon(icon);
+  if (!drawCustomIcon()) drawIcon(icon, iconVariant);
 
   const { first, last } = splitHeadline(title);
 
@@ -917,7 +939,8 @@ function saveCurrentState() {
     accent: $("accent").value,
     icon: $("icon").value,
     notes: $("notes").value,
-    customIconDataUrl
+    customIconDataUrl,
+    iconVariant
   };
   localStorage.setItem("tbwLastPreset", JSON.stringify(saved));
 }
@@ -926,6 +949,7 @@ function saveCurrentState() {
   $(id).addEventListener("input", () => {
     if ((id === "title" || id === "subtitle") && !customIconImage) {
       $("icon").value = inferIcon($("title").value, $("notes").value);
+      iconVariant = 0;
     }
     render();
     saveCurrentState();
@@ -957,7 +981,7 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
   });
 });
 
-$("newIcon").addEventListener("click", chooseNextIcon);
+$("newIcon").addEventListener("click", createNewIconVariation);
 
 $("customIcon").addEventListener("change", (event) => {
   const file = event.target.files?.[0];
@@ -1075,6 +1099,8 @@ try {
     Object.entries(saved).forEach(([key, value]) => {
       if ($(key) && key !== "customIconDataUrl") $(key).value = value;
     });
+
+    if (Number.isInteger(saved.iconVariant)) iconVariant = saved.iconVariant;
 
     if (saved.customIconDataUrl) {
       customIconDataUrl = saved.customIconDataUrl;
