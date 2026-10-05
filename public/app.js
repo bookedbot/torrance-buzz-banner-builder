@@ -23,6 +23,13 @@ bitesAsset.onload = () => {
 };
 bitesAsset.src = "/icons/Bites%20%26%20Bottles%20Gourmet%20Still%20Life.png";
 
+const cityHallAsset = new Image();
+cityHallAsset.onload = () => {
+  premiumAssets.civic = cityHallAsset;
+  render();
+};
+cityHallAsset.src = "/icons/Golden%20Courthouse%20and%20Gavel%20Emblem.png";
+
 const presets = {
   events: {
     title: "Events Radar",
