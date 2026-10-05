@@ -78,7 +78,10 @@ function inferIcon(title = "", notes = "") {
   if (/compass|map|explore|discovery|mystery|history/.test(n)) return "compass";
   if (/megaphone|headline|news|breaking|buzz/.test(n)) return "megaphone";
   if (/calendar|event|festival|concert|weekend/.test(n)) return "calendar";
-  if (/food|restaurant|bite|drink|bottle|dining|eat|wine|cocktail|coffee/.test(n)) return "fork";
+  const hasFood = /food|restaurant|bite|dining|eat|meal|plate|fork/.test(n);
+  const hasDrink = /drink|bottle|wine|cocktail|coffee|beer|glass|sip|sipping/.test(n);
+  if (hasFood && hasDrink) return "fooddrink";
+  if (hasFood || hasDrink) return "fork";
   if (/home|house|housing|real estate|property|mortgage/.test(n)) return "home";
   if (/alert|warning|traffic|closure|advisory|emergency/.test(n)) return "alert";
   if (/city|council|government|civic|planning|commission/.test(n)) return "civic";
@@ -91,7 +94,7 @@ function inferIcon(title = "", notes = "") {
   if (/hidden gems/.test(t)) return "gem";
   if (/torrance explained/.test(t)) return "compass";
   if (/^events radar$/.test(t)) return "calendar";
-  if (/bites\s*&\s*bottles/.test(t)) return "fork";
+  if (/bites\s*&\s*bottles/.test(t)) return "fooddrink";
   if (/city hall watch/.test(t)) return "civic";
   if (/torrance homefront/.test(t)) return "home";
   if (/buzz alerts/.test(t)) return "alert";
@@ -730,6 +733,115 @@ function drawIcon(icon, variant = 0) {
     ctx.beginPath();
     ctx.arc(101,56,24,0,Math.PI*2);
     ctx.fill();
+  } else if (icon === "fooddrink") {
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    if (variant === 0) {
+      // Fork + wine glass.
+      const metal = ctx.createLinearGradient(-55,-45,-15,50);
+      metal.addColorStop(0,"#FFF1A0");
+      metal.addColorStop(.35,"#FFC843");
+      metal.addColorStop(1,"#D8750A");
+      ctx.fillStyle = metal;
+      ctx.shadowColor = "rgba(24,91,216,.7)";
+      ctx.shadowBlur = 14;
+      ctx.beginPath();
+      ctx.roundRect(-48,-38,14,82,6);
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#071A47";
+      [-45,-41,-37].forEach(x=>ctx.fillRect(x,-38,2,24));
+
+      ctx.strokeStyle = "#FFD65A";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(18,-32);
+      ctx.bezierCurveTo(5,-14,8,10,25,15);
+      ctx.bezierCurveTo(42,10,45,-14,32,-32);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(25,15);
+      ctx.lineTo(25,43);
+      ctx.moveTo(11,43);
+      ctx.lineTo(39,43);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(249,158,30,.82)";
+      ctx.beginPath();
+      ctx.ellipse(25,3,12,7,0,0,Math.PI*2);
+      ctx.fill();
+    } else if (variant === 1) {
+      // Plate + bottle.
+      ctx.shadowColor = "rgba(24,91,216,.7)";
+      ctx.shadowBlur = 14;
+      ctx.fillStyle = "#F7EFD8";
+      ctx.beginPath();
+      ctx.ellipse(-10,24,43,13,0,0,Math.PI*2);
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+      const bottle = ctx.createLinearGradient(15,-45,48,48);
+      bottle.addColorStop(0,"#FFD75A");
+      bottle.addColorStop(.4,"#F1A01B");
+      bottle.addColorStop(1,"#A84B04");
+      ctx.fillStyle = bottle;
+      ctx.beginPath();
+      ctx.roundRect(18,-10,24,55,7);
+      ctx.fill();
+      ctx.fillRect(24,-34,12,26);
+
+      ctx.fillStyle = "rgba(255,255,255,.6)";
+      ctx.beginPath();
+      ctx.ellipse(28,-4,6,3,-.4,0,Math.PI*2);
+      ctx.fill();
+    } else {
+      // Covered dish + cocktail glass.
+      const dome = ctx.createLinearGradient(-50,-35,5,35);
+      dome.addColorStop(0,"#FFF0A0");
+      dome.addColorStop(.45,"#FFC43D");
+      dome.addColorStop(1,"#D9770C");
+      ctx.fillStyle = dome;
+      ctx.shadowColor = "rgba(24,91,216,.7)";
+      ctx.shadowBlur = 14;
+      ctx.beginPath();
+      ctx.arc(-15,12,31,Math.PI,0);
+      ctx.lineTo(16,12);
+      ctx.lineTo(-46,12);
+      ctx.closePath();
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#FFD65A";
+      ctx.beginPath();
+      ctx.arc(-15,-20,6,0,Math.PI*2);
+      ctx.fill();
+
+      ctx.strokeStyle = "#FFD65A";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(22,-28);
+      ctx.lineTo(48,-28);
+      ctx.lineTo(35,4);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(35,4);
+      ctx.lineTo(35,34);
+      ctx.moveTo(23,34);
+      ctx.lineTo(47,34);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(249,158,30,.82)";
+      ctx.beginPath();
+      ctx.moveTo(27,-24);
+      ctx.lineTo(43,-24);
+      ctx.lineTo(35,-7);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    ctx.restore();
   } else if (icon === "fork") {
     if (variant === 0) {
       // Fork + spoon.
