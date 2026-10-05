@@ -68,24 +68,46 @@ function iconGlyph(name) {
 }
 
 function inferIcon(title = "", notes = "") {
-  const combined = `${title} ${notes}`.toLowerCase();
+  const t = title.toLowerCase().trim();
+  const n = notes.toLowerCase().trim();
+  const combined = `${t} ${n}`;
 
-  // Strong topic matches first.
-  if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(combined)) return "brain";
-  if (/lightning|thunder|bolt|electric|speed|fast/.test(combined)) return "lightning";
-  if (/hidden gem|hidden gems|gem|gems|discover|discovery|small business|small businesses|local business|local businesses|shop local|people behind them/.test(combined)) return "gem";
-  if (/buzz|breaking|headline|news|happening|spotlight|big buzz|what matters/.test(combined)) return "megaphone";
-  if (/calendar|event|festival|concert|show|weekend/.test(combined)) return "calendar";
-  if (/food|restaurant|bite|drink|bottle|dining|eat/.test(combined)) return "fork";
-  if (/home|house|housing|real estate|property|mortgage/.test(combined)) return "home";
-  if (/alert|warning|traffic|closure|advisory|emergency/.test(combined)) return "alert";
-  if (/city|council|hall|government|civic|planning|commission/.test(combined)) return "civic";
-  if (/weather|sun|heat|rain|forecast|temperature/.test(combined)) return "sun";
-  if (/fun|game|star|play|entertainment/.test(combined)) return "star";
+  // Known Torrance Buzz Weekly sections get deterministic visuals.
+  if (/^trivia time$/.test(t)) return "brain";
+  if (/^the buzz in 60 seconds$/.test(t)) return "lightning";
+  if (/^this week'?s big buzz$/.test(t)) return "megaphone";
+  if (/hidden gems/.test(t)) return "gem";
+  if (/^events radar$/.test(t)) return "calendar";
+  if (/bites\s*&\s*bottles/.test(t)) return "fork";
+  if (/city hall watch/.test(t)) return "civic";
+  if (/torrance homefront/.test(t)) return "home";
+  if (/buzz alerts/.test(t)) return "alert";
 
-  // Generic design notes should not force an unrelated icon.
-  return "megaphone";
+  // Design notes can refine an unknown/new banner.
+  if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(n)) return "brain";
+  if (/lightning|thunder|bolt|electric|speed|fast/.test(n)) return "lightning";
+  if (/gem|gems|discover|discovery|small business|shop local/.test(n)) return "gem";
+  if (/megaphone|headline|news|breaking|buzz/.test(n)) return "megaphone";
+  if (/calendar|event|festival|concert|weekend/.test(n)) return "calendar";
+  if (/food|restaurant|bite|drink|bottle|dining|eat/.test(n)) return "fork";
+  if (/home|house|housing|real estate|property|mortgage/.test(n)) return "home";
+  if (/alert|warning|traffic|closure|advisory|emergency/.test(n)) return "alert";
+  if (/city|council|government|civic|planning|commission/.test(n)) return "civic";
+  if (/weather|sun|heat|rain|forecast|temperature/.test(n)) return "sun";
+  if (/fun|game|star|play|entertainment/.test(n)) return "star";
+
+  // If notes are generic, infer conservatively from title.
+  if (/event|festival|concert|weekend/.test(t)) return "calendar";
+  if (/food|restaurant|bite|drink|bottle|dining/.test(t)) return "fork";
+  if (/home|housing|property|real estate/.test(t)) return "home";
+  if (/alert|warning|closure|advisory/.test(t)) return "alert";
+  if (/city|council|government|civic/.test(t)) return "civic";
+  if (/weather|forecast|heat|rain/.test(t)) return "sun";
+  if (/news|headline|buzz|spotlight/.test(t)) return "megaphone";
+
+  return "spark";
 }
+
 
 function splitHeadline(title) {
   const words = title.trim().split(/\s+/).filter(Boolean);
