@@ -67,18 +67,23 @@ function iconGlyph(name) {
   }[name] || "✦";
 }
 
-function iconFromNotes(text = "") {
-  const t = text.toLowerCase();
-  if (/lightning|thunder|bolt|electric|fast|speed/.test(t)) return "lightning";
-  if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(t)) return "brain";
-  if (/calendar|event|festival|concert/.test(t)) return "calendar";
-  if (/food|restaurant|bite|drink|bottle/.test(t)) return "fork";
-  if (/home|house|housing|real estate/.test(t)) return "home";
-  if (/alert|warning|traffic|closure/.test(t)) return "alert";
-  if (/city|council|hall|government/.test(t)) return "civic";
-  if (/weather|sun|heat|rain/.test(t)) return "sun";
-  if (/fun|game|star/.test(t)) return "star";
-  return null;
+function inferIcon(title = "", notes = "") {
+  const combined = `${title} ${notes}`.toLowerCase();
+
+  // Strong topic matches first.
+  if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(combined)) return "brain";
+  if (/lightning|thunder|bolt|electric|speed|fast/.test(combined)) return "lightning";
+  if (/buzz|breaking|headline|news|happening|spotlight|big buzz|what matters/.test(combined)) return "megaphone";
+  if (/calendar|event|festival|concert|show|weekend/.test(combined)) return "calendar";
+  if (/food|restaurant|bite|drink|bottle|dining|eat/.test(combined)) return "fork";
+  if (/home|house|housing|real estate|property|mortgage/.test(combined)) return "home";
+  if (/alert|warning|traffic|closure|advisory|emergency/.test(combined)) return "alert";
+  if (/city|council|hall|government|civic|planning|commission/.test(combined)) return "civic";
+  if (/weather|sun|heat|rain|forecast|temperature/.test(combined)) return "sun";
+  if (/fun|game|star|play|entertainment/.test(combined)) return "star";
+
+  // Generic design notes should not force an unrelated icon.
+  return "spark";
 }
 
 function splitHeadline(title) {
@@ -217,7 +222,66 @@ function drawIcon(icon) {
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
 
-  if (icon === "lightning") {
+  if (icon === "megaphone") {
+    // Polished megaphone illustration for news/buzz/headline sections.
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    const cone = ctx.createLinearGradient(-40, -25, 45, 25);
+    cone.addColorStop(0, "#FFF0A0");
+    cone.addColorStop(.32, "#FFC844");
+    cone.addColorStop(.7, "#F49A1B");
+    cone.addColorStop(1, "#B85B08");
+
+    ctx.shadowColor = "rgba(31,104,235,.7)";
+    ctx.shadowBlur = 16;
+    ctx.shadowOffsetY = 4;
+
+    ctx.fillStyle = cone;
+    ctx.beginPath();
+    ctx.moveTo(-44, -17);
+    ctx.lineTo(24, -36);
+    ctx.lineTo(24, 36);
+    ctx.lineTo(-44, 17);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#FFB421";
+    ctx.beginPath();
+    ctx.roundRect(-58, -21, 20, 42, 7);
+    ctx.fill();
+
+    ctx.fillStyle = "#E67F0D";
+    ctx.beginPath();
+    ctx.moveTo(-8, 28);
+    ctx.lineTo(13, 28);
+    ctx.lineTo(4, 58);
+    ctx.lineTo(-16, 58);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "rgba(255,255,255,.7)";
+    ctx.beginPath();
+    ctx.moveTo(-29, -12);
+    ctx.lineTo(15, -25);
+    ctx.lineTo(15, -16);
+    ctx.lineTo(-24, -4);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = "#FFB421";
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    [-24, 0, 24].forEach((offset) => {
+      ctx.beginPath();
+      ctx.moveTo(38, offset * .45);
+      ctx.lineTo(58, offset * .65);
+      ctx.stroke();
+    });
+
+    ctx.restore();
+  } else if (icon === "lightning") {
     // Dimensional lightning bolt with metallic gold face and blue glow.
     ctx.save();
     ctx.translate(cx, cy);
@@ -646,17 +710,23 @@ function saveCurrentState() {
 
 ["title", "subtitle", "layout", "accent", "icon"].forEach((id) => {
   $(id).addEventListener("input", () => {
+    if ((id === "title" || id === "subtitle") && !customIconImage) {
+      $("icon").value = inferIcon($("title").value, $("notes").value);
+    }
     render();
     saveCurrentState();
   });
   $(id).addEventListener("change", () => {
+    if ((id === "title" || id === "subtitle") && !customIconImage) {
+      $("icon").value = inferIcon($("title").value, $("notes").value);
+    }
     render();
     saveCurrentState();
   });
 });
 
 $("notes").addEventListener("input", () => {
-  const suggested = iconFromNotes($("notes").value);
+  const suggested = inferIcon($("title").value, $("notes").value);
   if (suggested) $("icon").value = suggested;
   render();
   saveCurrentState();
@@ -811,7 +881,7 @@ try {
     $("referencePreview").hidden = false;
   }
 
-  const noteDrivenIcon = iconFromNotes($("notes").value);
+  const noteDrivenIcon = inferIcon($("title").value, $("notes").value);
   if (noteDrivenIcon) {
     $("icon").value = noteDrivenIcon;
     saveCurrentState();
