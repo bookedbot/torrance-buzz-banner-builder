@@ -15,6 +15,13 @@ let referenceImage = null;
 let customIconImage = null;
 let customIconDataUrl = null;
 let iconVariant = 0;
+const premiumAssets = {};
+const bitesAsset = new Image();
+bitesAsset.onload = () => {
+  premiumAssets.fooddrink = bitesAsset;
+  render();
+};
+bitesAsset.src = "/icons/Bites%20%26%20Bottles%20Gourmet%20Still%20Life.png";
 
 const presets = {
   events: {
@@ -200,6 +207,33 @@ function drawAccent(type) {
   }
 
   ctx.restore();
+}
+
+function drawPremiumAsset(icon) {
+  const image = premiumAssets[icon];
+  if (!image || !image.complete || !image.naturalWidth) return false;
+
+  const boxX = 42;
+  const boxY = 3;
+  const boxW = 152;
+  const boxH = 142;
+
+  const iw = image.naturalWidth;
+  const ih = image.naturalHeight;
+  const scale = Math.min(boxW / iw, boxH / ih);
+  const w = iw * scale;
+  const h = ih * scale;
+  const x = boxX + (boxW - w) / 2;
+  const y = boxY + (boxH - h) / 2;
+
+  ctx.save();
+  ctx.shadowColor = "rgba(21,91,226,.72)";
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 4;
+  ctx.drawImage(image, x, y, w, h);
+  ctx.restore();
+
+  return true;
 }
 
 function drawCustomIcon() {
@@ -996,7 +1030,7 @@ function render() {
   ctx.clearRect(0, 0, 1200, 150);
   drawMasterBackground();
   drawAccent(accent);
-  if (!drawCustomIcon()) drawIcon(icon, iconVariant);
+  if (!drawCustomIcon() && !drawPremiumAsset(icon)) drawIcon(icon, iconVariant);
 
   const { first, last } = splitHeadline(title);
 
