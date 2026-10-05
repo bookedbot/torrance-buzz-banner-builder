@@ -112,6 +112,55 @@ function inferIcon(title = "", notes = "") {
 }
 
 
+function iconAlternatives(title = "", notes = "") {
+  const primary = inferIcon(title, notes);
+  const t = `${title} ${notes}`.toLowerCase();
+
+  const pools = {
+    brain: ["brain", "star", "spark"],
+    lightning: ["lightning", "megaphone", "spark"],
+    megaphone: ["megaphone", "lightning", "spark"],
+    gem: ["gem", "compass", "spark"],
+    compass: ["compass", "gem", "spark"],
+    calendar: ["calendar", "star", "spark"],
+    fork: ["fork", "spark", "star"],
+    civic: ["civic", "compass", "spark"],
+    home: ["home", "compass", "spark"],
+    alert: ["alert", "lightning", "megaphone"],
+    sun: ["sun", "spark", "star"],
+    star: ["star", "brain", "spark"],
+    spark: ["spark", "megaphone", "compass"]
+  };
+
+  const list = pools[primary] ? [...pools[primary]] : ["spark", "megaphone", "compass"];
+
+  if (/hidden gem|discover|mystery|explore/.test(t) && !list.includes("gem")) list.unshift("gem");
+  if (/buzz|news|headline/.test(t) && !list.includes("megaphone")) list.unshift("megaphone");
+  if (/fast|60 seconds|speed/.test(t) && !list.includes("lightning")) list.unshift("lightning");
+
+  return [...new Set(list)];
+}
+
+function chooseNextIcon() {
+  const options = iconAlternatives($("title").value, $("notes").value);
+  const current = $("icon").value;
+  let index = options.indexOf(current);
+  if (index < 0) index = 0;
+  const next = options[(index + 1) % options.length];
+
+  customIconImage = null;
+  customIconDataUrl = null;
+  $("customIcon").value = "";
+  $("customIconPreview").hidden = true;
+  $("customIconPreview").src = "";
+  $("clearCustomIcon").hidden = true;
+
+  $("icon").value = next;
+  render();
+  saveCurrentState();
+  $("assistStatus").textContent = "New icon created. Click again to try another.";
+}
+
 function splitHeadline(title) {
   const words = title.trim().split(/\s+/).filter(Boolean);
   if (words.length <= 1) return { first: title, last: "" };
@@ -907,6 +956,8 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
     saveCurrentState();
   });
 });
+
+$("newIcon").addEventListener("click", chooseNextIcon);
 
 $("customIcon").addEventListener("change", (event) => {
   const file = event.target.files?.[0];
