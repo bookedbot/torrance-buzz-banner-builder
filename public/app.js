@@ -213,10 +213,10 @@ function drawPremiumAsset(icon) {
   const image = premiumAssets[icon];
   if (!image || !image.complete || !image.naturalWidth) return false;
 
-  const boxX = 42;
-  const boxY = 3;
-  const boxW = 152;
-  const boxH = 142;
+  const boxX = 54;
+  const boxY = -2;
+  const boxW = 175;
+  const boxH = 160;
 
   const iw = image.naturalWidth;
   const ih = image.naturalHeight;
