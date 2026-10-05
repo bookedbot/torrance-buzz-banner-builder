@@ -146,49 +146,118 @@ function drawIcon(icon) {
 
   ctx.save();
 
-  const glow = ctx.createRadialGradient(cx, cy, 8, cx, cy, 70);
+  const glow = ctx.createRadialGradient(cx, cy, 8, cx, cy, 72);
   glow.addColorStop(0, "rgba(20,110,255,.36)");
   glow.addColorStop(.55, "rgba(6,64,154,.20)");
   glow.addColorStop(1, "rgba(2,16,55,0)");
   ctx.fillStyle = glow;
   ctx.beginPath();
-  ctx.arc(cx, cy, 70, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.shadowColor = "rgba(26,99,235,.75)";
-  ctx.shadowBlur = 15;
-  ctx.fillStyle = brand.orange2;
-  ctx.beginPath();
-  ctx.roundRect(68, 93, 18, 28, 3);
-  ctx.roundRect(91, 79, 18, 42, 3);
-  ctx.roundRect(114, 61, 18, 60, 3);
+  ctx.arc(cx, cy, 72, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.strokeStyle = brand.orange;
-  ctx.lineWidth = 8;
+  ctx.fillStyle = brand.orange2;
+  ctx.lineWidth = 7;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
-  ctx.beginPath();
-  ctx.moveTo(72, 84);
-  ctx.lineTo(98, 64);
-  ctx.lineTo(121, 72);
-  ctx.lineTo(156, 43);
-  ctx.stroke();
+  ctx.shadowColor = "rgba(26,99,235,.75)";
+  ctx.shadowBlur = 14;
 
-  ctx.fillStyle = brand.orange2;
-  ctx.beginPath();
-  ctx.moveTo(148, 34);
-  ctx.lineTo(181, 27);
-  ctx.lineTo(172, 58);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.shadowBlur = 10;
-  ctx.fillStyle = brand.cream;
-  ctx.font = "700 18px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(iconGlyph(icon), 53, 52);
+  if (icon === "calendar") {
+    ctx.strokeRect(70, 42, 90, 72);
+    ctx.fillRect(70, 42, 90, 18);
+    ctx.fillStyle = brand.cream;
+    ctx.shadowBlur = 0;
+    for (let r = 0; r < 2; r++) {
+      for (let col = 0; col < 4; col++) {
+        ctx.fillRect(82 + col * 18, 72 + r * 18, 9, 9);
+      }
+    }
+  } else if (icon === "star") {
+    const spikes = 5, outer = 44, inner = 20;
+    let rot = Math.PI / 2 * 3;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - outer);
+    for (let i = 0; i < spikes; i++) {
+      ctx.lineTo(cx + Math.cos(rot) * outer, cy + Math.sin(rot) * outer);
+      rot += Math.PI / spikes;
+      ctx.lineTo(cx + Math.cos(rot) * inner, cy + Math.sin(rot) * inner);
+      rot += Math.PI / spikes;
+    }
+    ctx.closePath();
+    ctx.fill();
+  } else if (icon === "home") {
+    ctx.beginPath();
+    ctx.moveTo(68, 73);
+    ctx.lineTo(115, 34);
+    ctx.lineTo(162, 73);
+    ctx.stroke();
+    ctx.fillRect(82, 72, 66, 48);
+    ctx.fillStyle = brand.navy;
+    ctx.fillRect(109, 88, 18, 32);
+  } else if (icon === "alert") {
+    ctx.beginPath();
+    ctx.moveTo(115, 28);
+    ctx.lineTo(166, 118);
+    ctx.lineTo(64, 118);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fillStyle = brand.orange2;
+    ctx.font = "800 58px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("!", 115, 87);
+  } else if (icon === "sun") {
+    ctx.beginPath();
+    ctx.arc(cx, cy, 26, 0, Math.PI * 2);
+    ctx.fill();
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * 38, cy + Math.sin(a) * 38);
+      ctx.lineTo(cx + Math.cos(a) * 56, cy + Math.sin(a) * 56);
+      ctx.stroke();
+    }
+  } else if (icon === "fork") {
+    ctx.beginPath();
+    ctx.moveTo(84, 34);
+    ctx.lineTo(84, 116);
+    ctx.stroke();
+    [72,84,96].forEach(x => {
+      ctx.beginPath();
+      ctx.moveTo(x, 34);
+      ctx.lineTo(x, 64);
+      ctx.stroke();
+    });
+    ctx.beginPath();
+    ctx.moveTo(146, 34);
+    ctx.lineTo(146, 116);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(146, 48, 20, Math.PI, 0);
+    ctx.stroke();
+  } else if (icon === "civic") {
+    ctx.beginPath();
+    ctx.moveTo(70, 54);
+    ctx.lineTo(115, 30);
+    ctx.lineTo(160, 54);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillRect(68, 108, 94, 8);
+    [80,104,128,152].forEach(x => ctx.fillRect(x, 60, 10, 46));
+  } else if (icon === "spark") {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(Math.PI / 4);
+    ctx.fillRect(-10, -48, 20, 96);
+    ctx.rotate(Math.PI / 2);
+    ctx.fillRect(-10, -48, 20, 96);
+    ctx.restore();
+  } else {
+    ctx.beginPath();
+    ctx.arc(cx, cy, 38, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
   ctx.restore();
 }
