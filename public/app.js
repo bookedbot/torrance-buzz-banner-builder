@@ -3,7 +3,11 @@ const ctx = canvas.getContext("2d");
 const $ = (id) => document.getElementById(id);
 
 const brand = {
-  blue: "#1769AA",
+  navy: "#011037",
+  navy2: "#06265F",
+  cream: "#F6F1DE",
+  orange: "#F99E1E",
+  orange2: "#FFB21C",
   white: "#FFFFFF"
 };
 
@@ -28,7 +32,7 @@ const presets = {
     title: "City Hall Watch",
     subtitle: "Local decisions, meetings and what they mean",
     icon: "civic",
-    layout: "split",
+    layout: "standard",
     accent: "minimal"
   },
   home: {
@@ -42,7 +46,7 @@ const presets = {
     title: "Torrance Buzz Alerts",
     subtitle: "Closures, advisories and useful local updates",
     icon: "alert",
-    layout: "split",
+    layout: "standard",
     accent: "corner-bars"
   }
 };
@@ -60,38 +64,131 @@ function iconGlyph(name) {
   }[name] || "✦";
 }
 
-function fitText(text, maxWidth, startSize, minSize = 22) {
-  let size = startSize;
+function splitHeadline(title) {
+  const words = title.trim().split(/\s+/).filter(Boolean);
+  if (words.length <= 1) return { first: title, last: "" };
+  return {
+    first: words.slice(0, -1).join(" "),
+    last: words[words.length - 1]
+  };
+}
 
+function fitTitle(first, last, maxWidth, startSize = 54, minSize = 28) {
+  let size = startSize;
   while (size > minSize) {
-    ctx.font = `800 ${size}px Arial, sans-serif`;
-    if (ctx.measureText(text).width <= maxWidth) break;
+    ctx.font = `italic 800 ${size}px Arial, sans-serif`;
+    const gap = last ? 18 : 0;
+    const width = ctx.measureText(first).width + gap + ctx.measureText(last).width;
+    if (width <= maxWidth) break;
     size -= 2;
   }
-
   return size;
+}
+
+function drawMasterBackground() {
+  const gradient = ctx.createLinearGradient(0, 0, 1200, 150);
+  gradient.addColorStop(0, "#010D2D");
+  gradient.addColorStop(.48, "#031947");
+  gradient.addColorStop(1, "#02133A");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 1200, 150);
+
+  const glow = ctx.createRadialGradient(720, 65, 10, 720, 65, 520);
+  glow.addColorStop(0, "rgba(20,91,196,.19)");
+  glow.addColorStop(.58, "rgba(5,42,101,.08)");
+  glow.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, 1200, 150);
+
+  ctx.save();
+  ctx.strokeStyle = "rgba(52,115,223,.55)";
+  ctx.lineWidth = 2;
+  ctx.shadowColor = "rgba(35,103,235,.5)";
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  ctx.moveTo(330, 95);
+  ctx.lineTo(1150, 95);
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.fillStyle = "rgba(255,255,255,.05)";
+  ctx.fillRect(0, 0, 1200, 1);
 }
 
 function drawAccent(type) {
   ctx.save();
 
   if (type === "soft-rings") {
-    ctx.strokeStyle = "rgba(255,255,255,.13)";
-    ctx.lineWidth = 4;
-    [70, 105, 140].forEach((r, i) => {
+    ctx.strokeStyle = "rgba(64,119,224,.16)";
+    ctx.lineWidth = 3;
+    [64, 92].forEach((r) => {
       ctx.beginPath();
-      ctx.arc(1120, 75, r + i * 5, 0, Math.PI * 2);
+      ctx.arc(1120, 75, r, 0, Math.PI * 2);
       ctx.stroke();
     });
   } else if (type === "corner-bars") {
-    ctx.fillStyle = "rgba(255,255,255,.12)";
-    ctx.fillRect(1080, 0, 24, 150);
-    ctx.fillRect(1120, 0, 10, 150);
-    ctx.fillRect(1150, 0, 5, 150);
+    const g = ctx.createLinearGradient(1080, 0, 1200, 0);
+    g.addColorStop(0, "rgba(249,158,30,0)");
+    g.addColorStop(1, "rgba(249,158,30,.20)");
+    ctx.fillStyle = g;
+    ctx.fillRect(1050, 0, 150, 150);
   } else {
-    ctx.fillStyle = "rgba(255,255,255,.16)";
-    ctx.fillRect(0, 145, 1200, 5);
+    ctx.fillStyle = "rgba(249,158,30,.32)";
+    ctx.fillRect(1115, 17, 54, 4);
   }
+
+  ctx.restore();
+}
+
+function drawIcon(icon) {
+  const cx = 115;
+  const cy = 72;
+
+  ctx.save();
+
+  const glow = ctx.createRadialGradient(cx, cy, 8, cx, cy, 70);
+  glow.addColorStop(0, "rgba(20,110,255,.36)");
+  glow.addColorStop(.55, "rgba(6,64,154,.20)");
+  glow.addColorStop(1, "rgba(2,16,55,0)");
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 70, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.shadowColor = "rgba(26,99,235,.75)";
+  ctx.shadowBlur = 15;
+  ctx.fillStyle = brand.orange2;
+  ctx.beginPath();
+  ctx.roundRect(68, 93, 18, 28, 3);
+  ctx.roundRect(91, 79, 18, 42, 3);
+  ctx.roundRect(114, 61, 18, 60, 3);
+  ctx.fill();
+
+  ctx.strokeStyle = brand.orange;
+  ctx.lineWidth = 8;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.beginPath();
+  ctx.moveTo(72, 84);
+  ctx.lineTo(98, 64);
+  ctx.lineTo(121, 72);
+  ctx.lineTo(156, 43);
+  ctx.stroke();
+
+  ctx.fillStyle = brand.orange2;
+  ctx.beginPath();
+  ctx.moveTo(148, 34);
+  ctx.lineTo(181, 27);
+  ctx.lineTo(172, 58);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.shadowBlur = 10;
+  ctx.fillStyle = brand.cream;
+  ctx.font = "700 18px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(iconGlyph(icon), 53, 52);
 
   ctx.restore();
 }
@@ -99,82 +196,74 @@ function drawAccent(type) {
 function render() {
   const title = $("title").value.trim() || "Newsletter Banner";
   const subtitle = $("subtitle").value.trim();
-  const layout = $("layout").value;
   const accent = $("accent").value;
   const icon = $("icon").value;
+  const layout = $("layout").value;
 
   ctx.clearRect(0, 0, 1200, 150);
-
-  ctx.fillStyle = brand.blue;
-  ctx.fillRect(0, 0, 1200, 150);
-
-  const gradient = ctx.createLinearGradient(0, 0, 1200, 0);
-  gradient.addColorStop(0, "rgba(4,56,94,.18)");
-  gradient.addColorStop(.55, "rgba(23,105,170,0)");
-  gradient.addColorStop(1, "rgba(4,56,94,.12)");
-
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, 1200, 150);
-
+  drawMasterBackground();
   drawAccent(accent);
+  drawIcon(icon);
+
+  const { first, last } = splitHeadline(title);
+
+  let headlineX = 220;
+  let headlineY = 58;
+  let maxWidth = 890;
+
+  if (layout === "centered") {
+    headlineX = 600;
+    headlineY = 58;
+    maxWidth = 780;
+  } else if (layout === "split") {
+    headlineX = 245;
+    maxWidth = 760;
+  }
+
+  const fontSize = fitTitle(first, last, maxWidth);
+  ctx.font = `italic 800 ${fontSize}px Arial, sans-serif`;
   ctx.textBaseline = "middle";
 
   if (layout === "centered") {
-    ctx.fillStyle = "rgba(255,255,255,.16)";
-    ctx.beginPath();
-    ctx.arc(600, 30, 23, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = brand.white;
-    ctx.font = "700 25px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText(iconGlyph(icon), 600, 30);
-
-    const size = fitText(title, 960, 52);
-    ctx.font = `800 ${size}px Arial`;
-    ctx.fillText(title, 600, 78);
-
-    if (subtitle) {
-      ctx.font = "500 22px Arial";
-      ctx.fillStyle = "rgba(255,255,255,.9)";
-      ctx.fillText(subtitle, 600, 118);
-    }
-  } else {
-    const iconX = layout === "split" ? 92 : 82;
-
-    ctx.fillStyle = "rgba(255,255,255,.17)";
-    ctx.beginPath();
-    ctx.arc(iconX, 75, 44, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = brand.white;
-    ctx.textAlign = "center";
-    ctx.font = "700 44px Arial";
-    ctx.fillText(iconGlyph(icon), iconX, 77);
-
-    const startX = layout === "split" ? 165 : 150;
+    const gap = last ? 18 : 0;
+    const firstWidth = ctx.measureText(first).width;
+    const lastWidth = ctx.measureText(last).width;
+    const total = firstWidth + gap + lastWidth;
+    let start = headlineX - total / 2;
 
     ctx.textAlign = "left";
-    const size = fitText(title, 900, 52);
-    ctx.font = `800 ${size}px Arial`;
-    ctx.fillText(title, startX, 62);
+    ctx.fillStyle = brand.cream;
+    ctx.shadowColor = "rgba(0,0,0,.35)";
+    ctx.shadowBlur = 2;
+    ctx.fillText(first, start, headlineY);
 
-    if (subtitle) {
-      ctx.font = "500 22px Arial";
-      ctx.fillStyle = "rgba(255,255,255,.9)";
-      ctx.fillText(subtitle, startX, 108);
+    if (last) {
+      start += firstWidth + gap;
+      ctx.fillStyle = brand.orange;
+      ctx.fillText(last, start, headlineY);
     }
+  } else {
+    ctx.textAlign = "left";
+    ctx.fillStyle = brand.cream;
+    ctx.shadowColor = "rgba(0,0,0,.35)";
+    ctx.shadowBlur = 2;
+    ctx.fillText(first, headlineX, headlineY);
 
-    if (layout === "split") {
-      ctx.fillStyle = "rgba(255,255,255,.13)";
-      ctx.fillRect(1010, 25, 135, 100);
-
-      ctx.fillStyle = "rgba(255,255,255,.72)";
-      ctx.font = "800 14px Arial";
-      ctx.textAlign = "center";
-      ctx.fillText("TORRANCE", 1077, 64);
-      ctx.fillText("BUZZ WEEKLY", 1077, 88);
+    if (last) {
+      const firstWidth = ctx.measureText(first).width;
+      ctx.fillStyle = brand.orange;
+      ctx.fillText(last, headlineX + firstWidth + 18, headlineY);
     }
+  }
+
+  ctx.shadowBlur = 0;
+
+  if (subtitle) {
+    ctx.font = "500 25px Arial, sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,.94)";
+    ctx.textAlign = layout === "centered" ? "center" : "left";
+    const sx = layout === "centered" ? 600 : headlineX + 38;
+    ctx.fillText(subtitle, sx, 111);
   }
 }
 
@@ -205,6 +294,7 @@ $("reference").addEventListener("change", (event) => {
 
     try {
       localStorage.setItem("tbwReference", referenceImage);
+      $("assistStatus").textContent = "Master-style reference saved in this browser.";
     } catch {
       $("assistStatus").textContent = "Reference loaded, but it was too large to save in browser storage.";
     }
@@ -215,7 +305,7 @@ $("reference").addEventListener("change", (event) => {
 
 $("assist").addEventListener("click", async () => {
   const status = $("assistStatus");
-  status.textContent = "Analyzing banner choices…";
+  status.textContent = "Choosing the best approved icon and accent…";
   $("assist").disabled = true;
 
   try {
@@ -231,14 +321,14 @@ $("assist").addEventListener("click", async () => {
     const data = await response.json();
 
     if (data.icon) $("icon").value = data.icon;
-    if (data.layout) $("layout").value = data.layout;
+    $("layout").value = "standard";
     if (data.accent) $("accent").value = data.accent;
 
     render();
 
-    status.textContent = `No-cost Smart Assist: ${data.rationale || "Suggestion applied."}`;
+    status.textContent = "Master style preserved. Smart Assist changed only approved details.";
   } catch {
-    status.textContent = "Smart Assist could not connect. The banner controls still work normally.";
+    status.textContent = "Smart Assist could not connect. Master style remains locked.";
   } finally {
     $("assist").disabled = false;
   }
