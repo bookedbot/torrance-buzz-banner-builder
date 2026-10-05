@@ -236,29 +236,33 @@ function drawIcon(icon, variant = 0) {
 
   ctx.save();
 
-  const halo = ctx.createRadialGradient(cx, cy, 8, cx, cy, 78);
-  halo.addColorStop(0, "rgba(32,119,255,.42)");
-  halo.addColorStop(.52, "rgba(4,67,164,.23)");
+  const halo = ctx.createRadialGradient(cx - 10, cy - 10, 6, cx, cy, 82);
+  halo.addColorStop(0, "rgba(92,162,255,.55)");
+  halo.addColorStop(.38, "rgba(31,102,235,.30)");
+  halo.addColorStop(.72, "rgba(5,48,128,.16)");
   halo.addColorStop(1, "rgba(1,13,45,0)");
   ctx.fillStyle = halo;
   ctx.beginPath();
   ctx.arc(cx, cy, 78, 0, Math.PI * 2);
   ctx.fill();
 
-  const gold = ctx.createLinearGradient(65, 25, 165, 125);
-  gold.addColorStop(0, "#FFD65A");
-  gold.addColorStop(.28, "#FFB321");
-  gold.addColorStop(.7, "#F18B16");
-  gold.addColorStop(1, "#B95D08");
+  const gold = ctx.createLinearGradient(62, 20, 170, 130);
+  gold.addColorStop(0, "#FFF4AF");
+  gold.addColorStop(.18, "#FFD85A");
+  gold.addColorStop(.48, "#FFB024");
+  gold.addColorStop(.76, "#E88712");
+  gold.addColorStop(1, "#9F4303");
 
-  const lightGold = ctx.createLinearGradient(65, 30, 150, 110);
-  lightGold.addColorStop(0, "#FFF2A8");
-  lightGold.addColorStop(.45, "#FFC63A");
-  lightGold.addColorStop(1, "#E47A0A");
+  const lightGold = ctx.createLinearGradient(62, 22, 155, 118);
+  lightGold.addColorStop(0, "#FFF9D0");
+  lightGold.addColorStop(.35, "#FFE17D");
+  lightGold.addColorStop(.68, "#FFB629");
+  lightGold.addColorStop(1, "#D66E08");
 
-  ctx.shadowColor = "rgba(0,0,0,.55)";
-  ctx.shadowBlur = 9;
-  ctx.shadowOffsetY = 4;
+  ctx.shadowColor = "rgba(0,0,0,.62)";
+  ctx.shadowBlur = 13;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 6;
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
 
@@ -737,114 +741,148 @@ function drawIcon(icon, variant = 0) {
     ctx.save();
     ctx.translate(cx, cy);
 
+    const glossyGold = ctx.createLinearGradient(-58, -50, 52, 58);
+    glossyGold.addColorStop(0, "#FFF9C7");
+    glossyGold.addColorStop(.16, "#FFE173");
+    glossyGold.addColorStop(.42, "#FFB52A");
+    glossyGold.addColorStop(.72, "#E88411");
+    glossyGold.addColorStop(1, "#954003");
+
+    const amber = ctx.createLinearGradient(-10, -25, 25, 32);
+    amber.addColorStop(0, "#FFDA63");
+    amber.addColorStop(.4, "#F7A21D");
+    amber.addColorStop(1, "#A44904");
+
+    ctx.shadowColor = "rgba(24,91,216,.82)";
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetY = 5;
+
     if (variant === 0) {
-      // Fork + wine glass.
-      const metal = ctx.createLinearGradient(-55,-45,-15,50);
-      metal.addColorStop(0,"#FFF1A0");
-      metal.addColorStop(.35,"#FFC843");
-      metal.addColorStop(1,"#D8750A");
-      ctx.fillStyle = metal;
-      ctx.shadowColor = "rgba(24,91,216,.7)";
-      ctx.shadowBlur = 14;
+      // Premium plated dish + wine glass + fork.
+      ctx.fillStyle = "#F8F1DE";
       ctx.beginPath();
-      ctx.roundRect(-48,-38,14,82,6);
+      ctx.ellipse(-13, 24, 41, 13, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.shadowBlur = 0;
-      ctx.fillStyle = "#071A47";
-      [-45,-41,-37].forEach(x=>ctx.fillRect(x,-38,2,24));
-
-      ctx.strokeStyle = "#FFD65A";
-      ctx.lineWidth = 5;
+      const plateGlow = ctx.createRadialGradient(-23,18,2,-13,24,34);
+      plateGlow.addColorStop(0,"rgba(255,255,255,.95)");
+      plateGlow.addColorStop(.45,"rgba(240,232,210,.85)");
+      plateGlow.addColorStop(1,"rgba(182,196,219,.55)");
+      ctx.fillStyle = plateGlow;
       ctx.beginPath();
-      ctx.moveTo(18,-32);
-      ctx.bezierCurveTo(5,-14,8,10,25,15);
-      ctx.bezierCurveTo(42,10,45,-14,32,-32);
+      ctx.ellipse(-13, 21, 31, 8, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.strokeStyle = glossyGold;
+      ctx.lineWidth = 5;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(-57,-28); ctx.lineTo(-57,38);
+      ctx.moveTo(-66,-28); ctx.lineTo(-66,-7);
+      ctx.moveTo(-60,-28); ctx.lineTo(-60,-7);
+      ctx.moveTo(-54,-28); ctx.lineTo(-54,-7);
+      ctx.stroke();
+
+      // Wine glass.
+      ctx.shadowColor = "rgba(24,91,216,.72)";
+      ctx.shadowBlur = 14;
+      ctx.strokeStyle = "#FFE184";
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      ctx.moveTo(22,-33);
+      ctx.bezierCurveTo(8,-14,11,11,29,16);
+      ctx.bezierCurveTo(47,11,50,-14,36,-33);
       ctx.closePath();
       ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(25,15);
-      ctx.lineTo(25,43);
-      ctx.moveTo(11,43);
-      ctx.lineTo(39,43);
-      ctx.stroke();
 
-      ctx.fillStyle = "rgba(249,158,30,.82)";
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "rgba(249,158,30,.80)";
       ctx.beginPath();
-      ctx.ellipse(25,3,12,7,0,0,Math.PI*2);
+      ctx.ellipse(29,3,12,6,0,0,Math.PI*2);
       ctx.fill();
+
+      ctx.strokeStyle = "#FFD467";
+      ctx.beginPath(); ctx.moveTo(29,16); ctx.lineTo(29,43); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(15,43); ctx.lineTo(43,43); ctx.stroke();
+
+      ctx.fillStyle = "rgba(255,255,255,.72)";
+      ctx.beginPath(); ctx.ellipse(20,-20,8,4,-.45,0,Math.PI*2); ctx.fill();
+
     } else if (variant === 1) {
-      // Plate + bottle.
-      ctx.shadowColor = "rgba(24,91,216,.7)";
-      ctx.shadowBlur = 14;
-      ctx.fillStyle = "#F7EFD8";
-      ctx.beginPath();
-      ctx.ellipse(-10,24,43,13,0,0,Math.PI*2);
-      ctx.fill();
+      // Elegant wine bottle + glass + tasting plate.
+      ctx.fillStyle = "#F7EED8";
+      ctx.beginPath(); ctx.ellipse(-22,29,34,10,0,0,Math.PI*2); ctx.fill();
+
+      ctx.fillStyle = amber;
+      ctx.shadowColor = "rgba(25,91,220,.72)";
+      ctx.shadowBlur = 16;
+      ctx.beginPath(); ctx.roundRect(-3,-12,27,57,8); ctx.fill();
+      ctx.fillRect(4,-38,13,28);
 
       ctx.shadowBlur = 0;
-      const bottle = ctx.createLinearGradient(15,-45,48,48);
-      bottle.addColorStop(0,"#FFD75A");
-      bottle.addColorStop(.4,"#F1A01B");
-      bottle.addColorStop(1,"#A84B04");
-      ctx.fillStyle = bottle;
-      ctx.beginPath();
-      ctx.roundRect(18,-10,24,55,7);
-      ctx.fill();
-      ctx.fillRect(24,-34,12,26);
+      ctx.fillStyle = "#153B83";
+      ctx.beginPath(); ctx.roundRect(0,5,21,17,4); ctx.fill();
+      ctx.fillStyle = "#F6F1DE";
+      ctx.font = "800 7px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("TBW",10.5,13.5);
 
-      ctx.fillStyle = "rgba(255,255,255,.6)";
+      ctx.strokeStyle = "#FFE17C";
+      ctx.lineWidth = 4.5;
       ctx.beginPath();
-      ctx.ellipse(28,-4,6,3,-.4,0,Math.PI*2);
-      ctx.fill();
+      ctx.moveTo(38,-28);
+      ctx.bezierCurveTo(27,-11,29,8,44,13);
+      ctx.bezierCurveTo(59,8,61,-11,50,-28);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(44,13); ctx.lineTo(44,39); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(32,39); ctx.lineTo(56,39); ctx.stroke();
+
+      ctx.fillStyle = "rgba(249,158,30,.78)";
+      ctx.beginPath(); ctx.ellipse(44,1,10,5,0,0,Math.PI*2); ctx.fill();
+
+      ctx.fillStyle = "rgba(255,255,255,.68)";
+      ctx.beginPath(); ctx.ellipse(6,-1,7,3,-.5,0,Math.PI*2); ctx.fill();
+
     } else {
-      // Covered dish + cocktail glass.
-      const dome = ctx.createLinearGradient(-50,-35,5,35);
-      dome.addColorStop(0,"#FFF0A0");
-      dome.addColorStop(.45,"#FFC43D");
-      dome.addColorStop(1,"#D9770C");
-      ctx.fillStyle = dome;
-      ctx.shadowColor = "rgba(24,91,216,.7)";
-      ctx.shadowBlur = 14;
+      // Polished cloche + cocktail glass.
+      ctx.fillStyle = glossyGold;
+      ctx.shadowColor = "rgba(25,91,220,.75)";
+      ctx.shadowBlur = 17;
       ctx.beginPath();
-      ctx.arc(-15,12,31,Math.PI,0);
-      ctx.lineTo(16,12);
-      ctx.lineTo(-46,12);
-      ctx.closePath();
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "#FFD65A";
-      ctx.beginPath();
-      ctx.arc(-15,-20,6,0,Math.PI*2);
+      ctx.arc(-18,12,31,Math.PI,0);
+      ctx.lineTo(13,12); ctx.lineTo(-49,12); ctx.closePath();
       ctx.fill();
 
-      ctx.strokeStyle = "#FFD65A";
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.moveTo(22,-28);
-      ctx.lineTo(48,-28);
-      ctx.lineTo(35,4);
-      ctx.closePath();
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(35,4);
-      ctx.lineTo(35,34);
-      ctx.moveTo(23,34);
-      ctx.lineTo(47,34);
-      ctx.stroke();
-      ctx.fillStyle = "rgba(249,158,30,.82)";
-      ctx.beginPath();
-      ctx.moveTo(27,-24);
-      ctx.lineTo(43,-24);
-      ctx.lineTo(35,-7);
-      ctx.closePath();
-      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#FFD769";
+      ctx.beginPath(); ctx.arc(-18,-20,6,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.58)";
+      ctx.beginPath(); ctx.ellipse(-27,-2,16,5,-.35,0,Math.PI*2); ctx.fill();
+
+      ctx.strokeStyle = "#FFE181";
+      ctx.lineWidth = 4.5;
+      ctx.beginPath(); ctx.moveTo(22,-30); ctx.lineTo(51,-30); ctx.lineTo(36,4); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(36,4); ctx.lineTo(36,36); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(24,36); ctx.lineTo(48,36); ctx.stroke();
+
+      ctx.fillStyle = "rgba(249,158,30,.84)";
+      ctx.beginPath(); ctx.moveTo(28,-25); ctx.lineTo(45,-25); ctx.lineTo(36,-8); ctx.closePath(); ctx.fill();
+
+      ctx.fillStyle = "#FFD95D";
+      ctx.beginPath(); ctx.arc(51,-31,6,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#2E7C45";
+      ctx.beginPath(); ctx.ellipse(56,-37,8,3,-.7,0,Math.PI*2); ctx.fill();
     }
 
     ctx.restore();
   } else if (icon === "fork") {
     if (variant === 0) {
       // Fork + spoon.
+      ctx.shadowColor = "rgba(25,91,220,.78)";
+      ctx.shadowBlur = 18;
       ctx.fillStyle = gold;
       ctx.beginPath();
       ctx.roundRect(69, 31, 20, 91, 8);
@@ -860,9 +898,9 @@ function drawIcon(icon, variant = 0) {
       ctx.fill();
       ctx.fillRect(134, 56, 14, 66);
 
-      ctx.fillStyle = "rgba(255,255,255,.65)";
+      ctx.fillStyle = "rgba(255,255,255,.72)";
       ctx.beginPath();
-      ctx.ellipse(133,45,9,5,-.4,0,Math.PI*2);
+      ctx.ellipse(133,45,10,5,-.4,0,Math.PI*2);
       ctx.fill();
     } else if (variant === 1) {
       // Wine bottle + glass.
