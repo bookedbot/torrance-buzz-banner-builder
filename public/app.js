@@ -14,6 +14,7 @@ const brand = {
 let referenceImage = null;
 let customIconImage = null;
 let customIconDataUrl = null;
+let customIconBannerKey = null;
 let iconVariant = 0;
 const premiumAssets = {};
 const bitesAsset = new Image();
@@ -124,9 +125,27 @@ function inferIcon(title = "", notes = "") {
   return "spark";
 }
 
+function currentBannerKey() {
+  return ($("title").value || "").trim().toLowerCase();
+}
+
+function syncCustomIconToBanner() {
+  const key = currentBannerKey();
+  if (customIconImage && customIconBannerKey && customIconBannerKey !== key) {
+    customIconImage = null;
+    customIconDataUrl = null;
+    customIconBannerKey = null;
+    $("customIcon").value = "";
+    $("customIconPreview").hidden = true;
+    $("customIconPreview").src = "";
+    $("clearCustomIcon").hidden = true;
+  }
+}
+
 function createNewIconVariation() {
   customIconImage = null;
   customIconDataUrl = null;
+  customIconBannerKey = null;
   $("customIcon").value = "";
   $("customIconPreview").hidden = true;
   $("customIconPreview").src = "";
@@ -1037,6 +1056,7 @@ function render() {
   ctx.clearRect(0, 0, 1200, 150);
   drawMasterBackground();
   drawAccent(accent);
+  syncCustomIconToBanner();
   if (!drawCustomIcon() && !drawPremiumAsset(icon)) drawIcon(icon, iconVariant);
 
   const { first, last } = splitHeadline(title);
@@ -1110,6 +1130,7 @@ function saveCurrentState() {
     icon: $("icon").value,
     notes: $("notes").value,
     customIconDataUrl,
+    customIconBannerKey,
     iconVariant
   };
   localStorage.setItem("tbwLastPreset", JSON.stringify(saved));
@@ -1161,6 +1182,7 @@ $("customIcon").addEventListener("change", (event) => {
 
   reader.onload = () => {
     customIconDataUrl = reader.result;
+    customIconBannerKey = currentBannerKey();
     const image = new Image();
     image.onload = () => {
       customIconImage = image;
@@ -1267,12 +1289,14 @@ try {
 
   if (saved) {
     Object.entries(saved).forEach(([key, value]) => {
-      if ($(key) && key !== "customIconDataUrl") $(key).value = value;
+      if ($(key) && key !== "customIconDataUrl" && key !== "customIconBannerKey") $(key).value = value;
     });
 
     if (Number.isInteger(saved.iconVariant)) iconVariant = saved.iconVariant;
 
-    if (saved.customIconDataUrl) {
+    if (saved.customIconBannerKey) customIconBannerKey = saved.customIconBannerKey;
+
+    if (saved.customIconDataUrl && saved.customIconBannerKey === currentBannerKey()) {
       customIconDataUrl = saved.customIconDataUrl;
       const image = new Image();
       image.onload = () => {
