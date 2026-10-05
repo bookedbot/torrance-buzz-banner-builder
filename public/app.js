@@ -142,121 +142,255 @@ function drawAccent(type) {
 
 function drawIcon(icon) {
   const cx = 115;
-  const cy = 72;
+  const cy = 73;
 
   ctx.save();
 
-  const glow = ctx.createRadialGradient(cx, cy, 8, cx, cy, 72);
-  glow.addColorStop(0, "rgba(20,110,255,.36)");
-  glow.addColorStop(.55, "rgba(6,64,154,.20)");
-  glow.addColorStop(1, "rgba(2,16,55,0)");
-  ctx.fillStyle = glow;
+  const halo = ctx.createRadialGradient(cx, cy, 8, cx, cy, 78);
+  halo.addColorStop(0, "rgba(32,119,255,.42)");
+  halo.addColorStop(.52, "rgba(4,67,164,.23)");
+  halo.addColorStop(1, "rgba(1,13,45,0)");
+  ctx.fillStyle = halo;
   ctx.beginPath();
-  ctx.arc(cx, cy, 72, 0, Math.PI * 2);
+  ctx.arc(cx, cy, 78, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.strokeStyle = brand.orange;
-  ctx.fillStyle = brand.orange2;
-  ctx.lineWidth = 7;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-  ctx.shadowColor = "rgba(26,99,235,.75)";
-  ctx.shadowBlur = 14;
+  const gold = ctx.createLinearGradient(65, 25, 165, 125);
+  gold.addColorStop(0, "#FFD65A");
+  gold.addColorStop(.28, "#FFB321");
+  gold.addColorStop(.7, "#F18B16");
+  gold.addColorStop(1, "#B95D08");
 
-  if (icon === "calendar") {
-    ctx.strokeRect(70, 42, 90, 72);
-    ctx.fillRect(70, 42, 90, 18);
-    ctx.fillStyle = brand.cream;
-    ctx.shadowBlur = 0;
-    for (let r = 0; r < 2; r++) {
-      for (let col = 0; col < 4; col++) {
-        ctx.fillRect(82 + col * 18, 72 + r * 18, 9, 9);
-      }
-    }
-  } else if (icon === "star") {
-    const spikes = 5, outer = 44, inner = 20;
-    let rot = Math.PI / 2 * 3;
+  const lightGold = ctx.createLinearGradient(65, 30, 150, 110);
+  lightGold.addColorStop(0, "#FFF2A8");
+  lightGold.addColorStop(.45, "#FFC63A");
+  lightGold.addColorStop(1, "#E47A0A");
+
+  ctx.shadowColor = "rgba(0,0,0,.55)";
+  ctx.shadowBlur = 9;
+  ctx.shadowOffsetY = 4;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+
+  if (icon === "star") {
+    // Trivia: dimensional quiz badge with question mark.
+    ctx.fillStyle = gold;
     ctx.beginPath();
-    ctx.moveTo(cx, cy - outer);
-    for (let i = 0; i < spikes; i++) {
-      ctx.lineTo(cx + Math.cos(rot) * outer, cy + Math.sin(rot) * outer);
-      rot += Math.PI / spikes;
-      ctx.lineTo(cx + Math.cos(rot) * inner, cy + Math.sin(rot) * inner);
-      rot += Math.PI / spikes;
-    }
-    ctx.closePath();
+    ctx.roundRect(70, 32, 88, 82, 18);
     ctx.fill();
-  } else if (icon === "home") {
+
+    const inner = ctx.createLinearGradient(75, 36, 154, 108);
+    inner.addColorStop(0, "#123B83");
+    inner.addColorStop(1, "#071A47");
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = inner;
     ctx.beginPath();
-    ctx.moveTo(68, 73);
-    ctx.lineTo(115, 34);
-    ctx.lineTo(162, 73);
-    ctx.stroke();
-    ctx.fillRect(82, 72, 66, 48);
-    ctx.fillStyle = brand.navy;
-    ctx.fillRect(109, 88, 18, 32);
-  } else if (icon === "alert") {
-    ctx.beginPath();
-    ctx.moveTo(115, 28);
-    ctx.lineTo(166, 118);
-    ctx.lineTo(64, 118);
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fillStyle = brand.orange2;
-    ctx.font = "800 58px Arial";
+    ctx.roundRect(78, 40, 72, 66, 14);
+    ctx.fill();
+
+    ctx.fillStyle = "#FFD34B";
+    ctx.shadowColor = "rgba(255,179,33,.65)";
+    ctx.shadowBlur = 10;
+    ctx.font = "italic 900 52px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("!", 115, 87);
-  } else if (icon === "sun") {
+    ctx.fillText("?", cx, 72);
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "rgba(255,255,255,.78)";
     ctx.beginPath();
-    ctx.arc(cx, cy, 26, 0, Math.PI * 2);
+    ctx.ellipse(102, 47, 19, 6, -.35, 0, Math.PI * 2);
     ctx.fill();
+
+    // Small raised answer chips.
+    [["A",64,104],["B",91,116],["C",139,113]].forEach(([t,x,y]) => {
+      ctx.fillStyle = lightGold;
+      ctx.beginPath();
+      ctx.arc(x, y, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#072254";
+      ctx.font = "800 10px Arial";
+      ctx.fillText(t, x, y + .5);
+    });
+  } else if (icon === "calendar") {
+    ctx.fillStyle = gold;
+    ctx.beginPath();
+    ctx.roundRect(66, 40, 98, 78, 12);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#F7F3E2";
+    ctx.beginPath();
+    ctx.roundRect(73, 55, 84, 56, 6);
+    ctx.fill();
+
+    ctx.fillStyle = "#0A2C68";
+    ctx.fillRect(73, 55, 84, 17);
+
+    ctx.fillStyle = "#FFD34B";
+    [89,142].forEach(x => {
+      ctx.beginPath();
+      ctx.roundRect(x - 5, 31, 10, 28, 5);
+      ctx.fill();
+    });
+
+    ctx.fillStyle = "#194F9C";
+    for (let r = 0; r < 2; r++) {
+      for (let col = 0; col < 4; col++) {
+        ctx.beginPath();
+        ctx.roundRect(83 + col * 17, 80 + r * 17, 10, 10, 2);
+        ctx.fill();
+      }
+    }
+
+    ctx.fillStyle = "rgba(255,255,255,.72)";
+    ctx.beginPath();
+    ctx.ellipse(100, 49, 30, 6, -.12, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (icon === "home") {
+    ctx.fillStyle = gold;
+    ctx.beginPath();
+    ctx.moveTo(61, 73);
+    ctx.lineTo(115, 31);
+    ctx.lineTo(169, 73);
+    ctx.lineTo(158, 82);
+    ctx.lineTo(115, 48);
+    ctx.lineTo(72, 82);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = lightGold;
+    ctx.beginPath();
+    ctx.roundRect(78, 72, 74, 50, 5);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#0B3477";
+    ctx.fillRect(108, 91, 19, 31);
+
+    const win = ctx.createLinearGradient(84,82,102,101);
+    win.addColorStop(0,"#D7F2FF");
+    win.addColorStop(1,"#4FA1E3");
+    ctx.fillStyle = win;
+    ctx.fillRect(86, 84, 18, 18);
+    ctx.fillRect(132, 84, 13, 18);
+  } else if (icon === "alert") {
+    ctx.fillStyle = gold;
+    ctx.beginPath();
+    ctx.moveTo(115, 27);
+    ctx.lineTo(170, 121);
+    ctx.lineTo(60, 121);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#071A47";
+    ctx.beginPath();
+    ctx.moveTo(115, 43);
+    ctx.lineTo(153, 109);
+    ctx.lineTo(77, 109);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#FFD34B";
+    ctx.font = "900 57px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("!", 115, 86);
+
+    ctx.fillStyle = "rgba(255,255,255,.65)";
+    ctx.beginPath();
+    ctx.moveTo(92,48);
+    ctx.lineTo(113,34);
+    ctx.lineTo(122,50);
+    ctx.closePath();
+    ctx.fill();
+  } else if (icon === "sun") {
+    ctx.strokeStyle = "#FFB321";
+    ctx.lineWidth = 8;
     for (let i = 0; i < 8; i++) {
       const a = i * Math.PI / 4;
       ctx.beginPath();
-      ctx.moveTo(cx + Math.cos(a) * 38, cy + Math.sin(a) * 38);
-      ctx.lineTo(cx + Math.cos(a) * 56, cy + Math.sin(a) * 56);
+      ctx.moveTo(cx + Math.cos(a) * 43, cy + Math.sin(a) * 43);
+      ctx.lineTo(cx + Math.cos(a) * 59, cy + Math.sin(a) * 59);
       ctx.stroke();
     }
+
+    ctx.fillStyle = gold;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 36, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    const shine = ctx.createRadialGradient(99,55,2,99,55,25);
+    shine.addColorStop(0,"rgba(255,255,255,.85)");
+    shine.addColorStop(1,"rgba(255,255,255,0)");
+    ctx.fillStyle = shine;
+    ctx.beginPath();
+    ctx.arc(101,56,24,0,Math.PI*2);
+    ctx.fill();
   } else if (icon === "fork") {
+    ctx.fillStyle = gold;
     ctx.beginPath();
-    ctx.moveTo(84, 34);
-    ctx.lineTo(84, 116);
-    ctx.stroke();
-    [72,84,96].forEach(x => {
-      ctx.beginPath();
-      ctx.moveTo(x, 34);
-      ctx.lineTo(x, 64);
-      ctx.stroke();
-    });
+    ctx.roundRect(69, 31, 20, 91, 8);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#071A47";
+    [73,79,85].forEach(x => ctx.fillRect(x,31,3,28));
+
+    ctx.fillStyle = lightGold;
     ctx.beginPath();
-    ctx.moveTo(146, 34);
-    ctx.lineTo(146, 116);
-    ctx.stroke();
+    ctx.ellipse(141, 55, 25, 27, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(134, 56, 14, 66);
+
+    ctx.fillStyle = "rgba(255,255,255,.65)";
     ctx.beginPath();
-    ctx.arc(146, 48, 20, Math.PI, 0);
-    ctx.stroke();
+    ctx.ellipse(133,45,9,5,-.4,0,Math.PI*2);
+    ctx.fill();
   } else if (icon === "civic") {
+    ctx.fillStyle = gold;
     ctx.beginPath();
-    ctx.moveTo(70, 54);
-    ctx.lineTo(115, 30);
-    ctx.lineTo(160, 54);
+    ctx.moveTo(57, 55);
+    ctx.lineTo(115, 26);
+    ctx.lineTo(173, 55);
     ctx.closePath();
     ctx.fill();
-    ctx.fillRect(68, 108, 94, 8);
-    [80,104,128,152].forEach(x => ctx.fillRect(x, 60, 10, 46));
-  } else if (icon === "spark") {
-    ctx.save();
+
+    ctx.fillStyle = lightGold;
+    ctx.fillRect(64, 108, 102, 12);
+    [73,96,119,142].forEach(x => {
+      ctx.fillRect(x, 61, 14, 45);
+    });
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#0A2D67";
+    [78,101,124,147].forEach(x => {
+      ctx.fillRect(x, 67, 5, 33);
+    });
+
+    ctx.fillStyle = "rgba(255,255,255,.62)";
+    ctx.beginPath();
+    ctx.moveTo(75,50);
+    ctx.lineTo(115,31);
+    ctx.lineTo(132,40);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    // Spark: glossy gold burst.
+    ctx.fillStyle = gold;
     ctx.translate(cx, cy);
     ctx.rotate(Math.PI / 4);
-    ctx.fillRect(-10, -48, 20, 96);
-    ctx.rotate(Math.PI / 2);
-    ctx.fillRect(-10, -48, 20, 96);
-    ctx.restore();
-  } else {
     ctx.beginPath();
-    ctx.arc(cx, cy, 38, 0, Math.PI * 2);
+    ctx.roundRect(-11, -52, 22, 104, 9);
     ctx.fill();
+    ctx.rotate(Math.PI / 2);
+    ctx.beginPath();
+    ctx.roundRect(-11, -52, 22, 104, 9);
+    ctx.fill();
+    ctx.rotate(-3 * Math.PI / 4);
+    ctx.shadowBlur = 0;
   }
 
   ctx.restore();
