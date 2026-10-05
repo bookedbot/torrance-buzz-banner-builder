@@ -267,8 +267,26 @@ function render() {
   }
 }
 
+function saveCurrentState() {
+  const saved = {
+    title: $("title").value,
+    subtitle: $("subtitle").value,
+    layout: $("layout").value,
+    accent: $("accent").value,
+    icon: $("icon").value
+  };
+  localStorage.setItem("tbwLastPreset", JSON.stringify(saved));
+}
+
 ["title", "subtitle", "layout", "accent", "icon"].forEach((id) => {
-  $(id).addEventListener("input", render);
+  $(id).addEventListener("input", () => {
+    render();
+    saveCurrentState();
+  });
+  $(id).addEventListener("change", () => {
+    render();
+    saveCurrentState();
+  });
 });
 
 document.querySelectorAll("[data-preset]").forEach((button) => {
@@ -278,6 +296,7 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
       $(key).value = value;
     });
     render();
+    saveCurrentState();
   });
 });
 
@@ -325,6 +344,7 @@ $("assist").addEventListener("click", async () => {
     if (data.accent) $("accent").value = data.accent;
 
     render();
+    saveCurrentState();
 
     status.textContent = "Master style preserved. Smart Assist changed only approved details.";
   } catch {
@@ -349,16 +369,8 @@ $("download").addEventListener("click", () => {
 });
 
 $("savePreset").addEventListener("click", () => {
-  const saved = {
-    title: $("title").value,
-    subtitle: $("subtitle").value,
-    layout: $("layout").value,
-    accent: $("accent").value,
-    icon: $("icon").value
-  };
-
-  localStorage.setItem("tbwLastPreset", JSON.stringify(saved));
-  $("assistStatus").textContent = "Preset saved in this browser.";
+  saveCurrentState();
+  $("assistStatus").textContent = "Banner settings saved. Changes are also saved automatically.";
 });
 
 try {
