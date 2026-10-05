@@ -237,3 +237,5 @@ button:hover { filter: brightness(.97); }
 .icon-tools{display:flex;gap:10px;align-items:center;margin-top:10px}
 .icon-tools img{width:72px;height:72px;object-fit:contain;border-radius:10px;border:1px solid #d8e0e8;background:#fff;padding:5px}
 .icon-tools button{padding:8px 10px}
+
+.new-icon-btn{width:100%;margin-top:10px}
