@@ -741,140 +741,119 @@ function drawIcon(icon, variant = 0) {
     ctx.save();
     ctx.translate(cx, cy);
 
-    const glossyGold = ctx.createLinearGradient(-58, -50, 52, 58);
-    glossyGold.addColorStop(0, "#FFF9C7");
-    glossyGold.addColorStop(.16, "#FFE173");
-    glossyGold.addColorStop(.42, "#FFB52A");
-    glossyGold.addColorStop(.72, "#E88411");
-    glossyGold.addColorStop(1, "#954003");
+    const glassGold = ctx.createLinearGradient(-58,-50,58,58);
+    glassGold.addColorStop(0,"#FFF8C9");
+    glassGold.addColorStop(.18,"#FFE27B");
+    glassGold.addColorStop(.48,"#FFB52D");
+    glassGold.addColorStop(.76,"#E78512");
+    glassGold.addColorStop(1,"#984105");
 
-    const amber = ctx.createLinearGradient(-10, -25, 25, 32);
-    amber.addColorStop(0, "#FFDA63");
-    amber.addColorStop(.4, "#F7A21D");
-    amber.addColorStop(1, "#A44904");
+    const bottleGrad = ctx.createLinearGradient(-20,-45,25,48);
+    bottleGrad.addColorStop(0,"#FFDB69");
+    bottleGrad.addColorStop(.25,"#F8B127");
+    bottleGrad.addColorStop(.62,"#D9780D");
+    bottleGrad.addColorStop(1,"#8E3A03");
 
-    ctx.shadowColor = "rgba(24,91,216,.82)";
-    ctx.shadowBlur = 20;
-    ctx.shadowOffsetY = 5;
+    ctx.shadowColor="rgba(27,95,226,.78)";
+    ctx.shadowBlur=18;
+    ctx.shadowOffsetY=5;
 
     if (variant === 0) {
-      // Premium plated dish + wine glass + fork.
-      ctx.fillStyle = "#F8F1DE";
+      // Plated entrée + wine glass.
+      ctx.fillStyle="#F7F1DE";
+      ctx.beginPath(); ctx.ellipse(-16,27,42,13,0,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0;
+
+      // Food on plate.
+      const foodGrad=ctx.createRadialGradient(-20,15,2,-16,20,22);
+      foodGrad.addColorStop(0,"#F9C766");
+      foodGrad.addColorStop(.55,"#DE8A22");
+      foodGrad.addColorStop(1,"#9B4A08");
+      ctx.fillStyle=foodGrad;
       ctx.beginPath();
-      ctx.ellipse(-13, 24, 41, 13, 0, 0, Math.PI * 2);
+      ctx.ellipse(-17,18,24,10,-.12,0,Math.PI*2);
       ctx.fill();
 
-      ctx.shadowBlur = 0;
-      const plateGlow = ctx.createRadialGradient(-23,18,2,-13,24,34);
-      plateGlow.addColorStop(0,"rgba(255,255,255,.95)");
-      plateGlow.addColorStop(.45,"rgba(240,232,210,.85)");
-      plateGlow.addColorStop(1,"rgba(182,196,219,.55)");
-      ctx.fillStyle = plateGlow;
-      ctx.beginPath();
-      ctx.ellipse(-13, 21, 31, 8, 0, 0, Math.PI*2);
-      ctx.fill();
+      ctx.fillStyle="#5B9B45";
+      ctx.beginPath(); ctx.ellipse(-33,12,9,4,-.6,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(-2,11,8,3,.45,0,Math.PI*2); ctx.fill();
 
-      ctx.strokeStyle = glossyGold;
-      ctx.lineWidth = 5;
-      ctx.lineCap = "round";
-      ctx.beginPath();
-      ctx.moveTo(-57,-28); ctx.lineTo(-57,38);
-      ctx.moveTo(-66,-28); ctx.lineTo(-66,-7);
-      ctx.moveTo(-60,-28); ctx.lineTo(-60,-7);
-      ctx.moveTo(-54,-28); ctx.lineTo(-54,-7);
-      ctx.stroke();
+      // Fork.
+      ctx.strokeStyle=glassGold; ctx.lineWidth=5; ctx.lineCap="round";
+      ctx.beginPath(); ctx.moveTo(-61,-30); ctx.lineTo(-61,40); ctx.stroke();
+      [-69,-63,-57].forEach(x=>{ctx.beginPath();ctx.moveTo(x,-30);ctx.lineTo(x,-8);ctx.stroke();});
 
       // Wine glass.
-      ctx.shadowColor = "rgba(24,91,216,.72)";
-      ctx.shadowBlur = 14;
-      ctx.strokeStyle = "#FFE184";
-      ctx.lineWidth = 4.5;
+      ctx.shadowColor="rgba(34,106,244,.72)"; ctx.shadowBlur=12;
+      ctx.strokeStyle="#FFE89A"; ctx.lineWidth=4.5;
       ctx.beginPath();
-      ctx.moveTo(22,-33);
-      ctx.bezierCurveTo(8,-14,11,11,29,16);
-      ctx.bezierCurveTo(47,11,50,-14,36,-33);
-      ctx.closePath();
-      ctx.stroke();
-
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "rgba(249,158,30,.80)";
-      ctx.beginPath();
-      ctx.ellipse(29,3,12,6,0,0,Math.PI*2);
-      ctx.fill();
-
-      ctx.strokeStyle = "#FFD467";
-      ctx.beginPath(); ctx.moveTo(29,16); ctx.lineTo(29,43); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(15,43); ctx.lineTo(43,43); ctx.stroke();
-
-      ctx.fillStyle = "rgba(255,255,255,.72)";
-      ctx.beginPath(); ctx.ellipse(20,-20,8,4,-.45,0,Math.PI*2); ctx.fill();
+      ctx.moveTo(18,-34);
+      ctx.bezierCurveTo(7,-15,9,8,28,15);
+      ctx.bezierCurveTo(47,8,49,-15,38,-34);
+      ctx.closePath(); ctx.stroke();
+      ctx.shadowBlur=0;
+      ctx.fillStyle="rgba(244,139,33,.82)";
+      ctx.beginPath(); ctx.ellipse(28,2,12,6,0,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle="#FFD46B";
+      ctx.beginPath();ctx.moveTo(28,15);ctx.lineTo(28,43);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(14,43);ctx.lineTo(42,43);ctx.stroke();
+      ctx.fillStyle="rgba(255,255,255,.72)";
+      ctx.beginPath();ctx.ellipse(18,-21,8,4,-.5,0,Math.PI*2);ctx.fill();
 
     } else if (variant === 1) {
-      // Elegant wine bottle + glass + tasting plate.
-      ctx.fillStyle = "#F7EED8";
-      ctx.beginPath(); ctx.ellipse(-22,29,34,10,0,0,Math.PI*2); ctx.fill();
+      // Wine bottle + filled glass + tasting board.
+      ctx.fillStyle="#D7A45C";
+      ctx.beginPath(); ctx.roundRect(-53,26,48,10,5); ctx.fill();
 
-      ctx.fillStyle = amber;
-      ctx.shadowColor = "rgba(25,91,220,.72)";
-      ctx.shadowBlur = 16;
-      ctx.beginPath(); ctx.roundRect(-3,-12,27,57,8); ctx.fill();
-      ctx.fillRect(4,-38,13,28);
+      ctx.fillStyle=bottleGrad;
+      ctx.shadowColor="rgba(24,91,216,.78)"; ctx.shadowBlur=16;
+      ctx.beginPath(); ctx.roundRect(-18,-13,29,59,9); ctx.fill();
+      ctx.fillRect(-10,-41,13,29);
 
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "#153B83";
-      ctx.beginPath(); ctx.roundRect(0,5,21,17,4); ctx.fill();
-      ctx.fillStyle = "#F6F1DE";
-      ctx.font = "800 7px Arial";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("TBW",10.5,13.5);
-
-      ctx.strokeStyle = "#FFE17C";
-      ctx.lineWidth = 4.5;
+      // Bottle shoulders.
       ctx.beginPath();
-      ctx.moveTo(38,-28);
-      ctx.bezierCurveTo(27,-11,29,8,44,13);
-      ctx.bezierCurveTo(59,8,61,-11,50,-28);
-      ctx.closePath();
-      ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(44,13); ctx.lineTo(44,39); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(32,39); ctx.lineTo(56,39); ctx.stroke();
+      ctx.moveTo(-18,-13);ctx.quadraticCurveTo(-18,-23,-10,-26);
+      ctx.lineTo(3,-26);ctx.quadraticCurveTo(11,-23,11,-13);ctx.closePath();ctx.fill();
 
-      ctx.fillStyle = "rgba(249,158,30,.78)";
-      ctx.beginPath(); ctx.ellipse(44,1,10,5,0,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0;
+      ctx.fillStyle="#173B80"; ctx.beginPath();ctx.roundRect(-13,4,19,18,4);ctx.fill();
+      ctx.fillStyle="#F6F1DE";ctx.font="800 7px Arial";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("TBW",-3.5,13);
 
-      ctx.fillStyle = "rgba(255,255,255,.68)";
-      ctx.beginPath(); ctx.ellipse(6,-1,7,3,-.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle="rgba(255,255,255,.58)";
+      ctx.beginPath();ctx.ellipse(-9,-5,7,3,-.5,0,Math.PI*2);ctx.fill();
+
+      // Glass.
+      ctx.strokeStyle="#FFE791";ctx.lineWidth=4.5;
+      ctx.shadowColor="rgba(24,91,216,.65)";ctx.shadowBlur=10;
+      ctx.beginPath();
+      ctx.moveTo(28,-30);ctx.bezierCurveTo(18,-12,20,8,36,14);ctx.bezierCurveTo(52,8,54,-12,44,-30);ctx.closePath();ctx.stroke();
+      ctx.shadowBlur=0;
+      ctx.fillStyle="rgba(247,147,35,.86)";
+      ctx.beginPath();ctx.ellipse(36,1,10,5,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.moveTo(36,14);ctx.lineTo(36,41);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(24,41);ctx.lineTo(48,41);ctx.stroke();
+
+      // Small tasting garnish on board.
+      ctx.fillStyle="#F0C15B";ctx.beginPath();ctx.arc(-39,22,6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#5E9F4C";ctx.beginPath();ctx.ellipse(-34,17,6,3,-.5,0,Math.PI*2);ctx.fill();
 
     } else {
-      // Polished cloche + cocktail glass.
-      ctx.fillStyle = glossyGold;
-      ctx.shadowColor = "rgba(25,91,220,.75)";
-      ctx.shadowBlur = 17;
-      ctx.beginPath();
-      ctx.arc(-18,12,31,Math.PI,0);
-      ctx.lineTo(13,12); ctx.lineTo(-49,12); ctx.closePath();
-      ctx.fill();
+      // Cocktail + covered dish.
+      ctx.fillStyle=glassGold;
+      ctx.shadowColor="rgba(27,95,226,.78)";ctx.shadowBlur=16;
+      ctx.beginPath();ctx.arc(-19,14,31,Math.PI,0);ctx.lineTo(12,14);ctx.lineTo(-50,14);ctx.closePath();ctx.fill();
+      ctx.shadowBlur=0;
+      ctx.fillStyle="#FFD86A";ctx.beginPath();ctx.arc(-19,-18,6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="rgba(255,255,255,.58)";ctx.beginPath();ctx.ellipse(-28,-1,15,5,-.35,0,Math.PI*2);ctx.fill();
 
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "#FFD769";
-      ctx.beginPath(); ctx.arc(-18,-20,6,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle = "rgba(255,255,255,.58)";
-      ctx.beginPath(); ctx.ellipse(-27,-2,16,5,-.35,0,Math.PI*2); ctx.fill();
-
-      ctx.strokeStyle = "#FFE181";
-      ctx.lineWidth = 4.5;
-      ctx.beginPath(); ctx.moveTo(22,-30); ctx.lineTo(51,-30); ctx.lineTo(36,4); ctx.closePath(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(36,4); ctx.lineTo(36,36); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(24,36); ctx.lineTo(48,36); ctx.stroke();
-
-      ctx.fillStyle = "rgba(249,158,30,.84)";
-      ctx.beginPath(); ctx.moveTo(28,-25); ctx.lineTo(45,-25); ctx.lineTo(36,-8); ctx.closePath(); ctx.fill();
-
-      ctx.fillStyle = "#FFD95D";
-      ctx.beginPath(); ctx.arc(51,-31,6,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#2E7C45";
-      ctx.beginPath(); ctx.ellipse(56,-37,8,3,-.7,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle="#FFE791";ctx.lineWidth=4.5;
+      ctx.beginPath();ctx.moveTo(22,-31);ctx.lineTo(51,-31);ctx.lineTo(36,5);ctx.closePath();ctx.stroke();
+      ctx.beginPath();ctx.moveTo(36,5);ctx.lineTo(36,36);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(24,36);ctx.lineTo(48,36);ctx.stroke();
+      ctx.fillStyle="rgba(246,146,33,.84)";
+      ctx.beginPath();ctx.moveTo(28,-26);ctx.lineTo(45,-26);ctx.lineTo(36,-9);ctx.closePath();ctx.fill();
+      ctx.fillStyle="#FFD95D";ctx.beginPath();ctx.arc(51,-32,6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#45934B";ctx.beginPath();ctx.ellipse(56,-38,8,3,-.7,0,Math.PI*2);ctx.fill();
     }
 
     ctx.restore();
