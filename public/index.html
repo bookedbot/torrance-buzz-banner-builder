@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Torrance Buzz Banner Builder</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">THE TORRANCE BUZZ WEEKLY</p>
+        <h1>Banner Builder</h1>
+        <p class="muted">Brand-locked 1200 × 150 newsletter banners.</p>
+      </div>
+      <span class="lock">🔒 Brand rules locked</span>
+    </header>
+
+    <section class="workspace">
+      <aside class="panel controls">
+        <h2>Create Banner</h2>
+
+        <label>
+          Banner title
+          <input id="title" value="Events Radar" maxlength="48" />
+        </label>
+
+        <label>
+          Optional subtitle
+          <input id="subtitle" value="What’s happening around Torrance this week" maxlength="70" />
+        </label>
+
+        <div class="grid2">
+          <label>
+            Layout
+            <select id="layout">
+              <option value="standard">Standard</option>
+              <option value="centered">Centered</option>
+              <option value="split">Split</option>
+            </select>
+          </label>
+
+          <label>
+            Accent
+            <select id="accent">
+              <option value="soft-rings">Soft rings</option>
+              <option value="corner-bars">Corner bars</option>
+              <option value="minimal">Minimal</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          Icon
+          <select id="icon">
+            <option value="calendar">Calendar</option>
+            <option value="spark">Spark</option>
+            <option value="fork">Food</option>
+            <option value="home">Home</option>
+            <option value="alert">Alert</option>
+            <option value="civic">Civic</option>
+            <option value="sun">Weather</option>
+            <option value="star">Fun</option>
+          </select>
+        </label>
+
+        <label>
+          Design notes
+          <textarea id="notes" rows="3" placeholder="Example: energetic but still clean and professional"></textarea>
+        </label>
+
+        <div class="reference-box">
+          <div>
+            <strong>Style reference</strong>
+            <p class="muted tiny">Upload an approved TBW banner. It stays in this browser.</p>
+          </div>
+          <input id="reference" type="file" accept="image/png,image/jpeg,image/webp" />
+          <img id="referencePreview" alt="Style reference preview" hidden />
+        </div>
+
+        <div class="actions">
+          <button id="assist" class="secondary">✨ Smart Assist</button>
+          <button id="download" class="primary">Download PNG</button>
+        </div>
+
+        <p id="assistStatus" class="status">Smart Assist currently uses no paid AI API.</p>
+      </aside>
+
+      <section class="panel preview-panel">
+        <div class="preview-head">
+          <div>
+            <h2>Preview</h2>
+            <p class="muted tiny">Locked output: 1200 × 150 PNG</p>
+          </div>
+          <button id="savePreset" class="ghost">Save preset</button>
+        </div>
+
+        <div class="canvas-wrap">
+          <canvas id="banner" width="1200" height="150"></canvas>
+        </div>
+
+        <div class="brand-rules">
+          <div><span>Canvas</span><strong>1200 × 150</strong></div>
+          <div><span>Primary</span><strong>#1769AA</strong></div>
+          <div><span>Typeface</span><strong>Arial / system sans</strong></div>
+          <div><span>Export</span><strong>PNG</strong></div>
+        </div>
+
+        <div class="preset-row">
+          <button data-preset="events">Events Radar</button>
+          <button data-preset="bites">Bites & Bottles</button>
+          <button data-preset="hall">City Hall Watch</button>
+          <button data-preset="home">Torrance Homefront</button>
+          <button data-preset="alerts">Buzz Alerts</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
