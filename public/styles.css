@@ -232,3 +232,8 @@ button:hover { filter: brightness(.97); }
   .shell { padding: 16px; }
   .brand-rules { grid-template-columns: 1fr 1fr; }
 }
+
+
+.icon-tools{display:flex;gap:10px;align-items:center;margin-top:10px}
+.icon-tools img{width:72px;height:72px;object-fit:contain;border-radius:10px;border:1px solid #d8e0e8;background:#fff;padding:5px}
+.icon-tools button{padding:8px 10px}
