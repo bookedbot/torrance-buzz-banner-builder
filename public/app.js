@@ -680,6 +680,12 @@ try {
     $("referencePreview").src = referenceImage;
     $("referencePreview").hidden = false;
   }
+
+  const noteDrivenIcon = iconFromNotes($("notes").value);
+  if (noteDrivenIcon) {
+    $("icon").value = noteDrivenIcon;
+    saveCurrentState();
+  }
 } catch {}
 
 render();
