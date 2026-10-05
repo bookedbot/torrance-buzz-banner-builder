@@ -73,6 +73,7 @@ function inferIcon(title = "", notes = "") {
   // Strong topic matches first.
   if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(combined)) return "brain";
   if (/lightning|thunder|bolt|electric|speed|fast/.test(combined)) return "lightning";
+  if (/hidden gem|hidden gems|gem|gems|discover|discovery|small business|small businesses|local business|local businesses|shop local|people behind them/.test(combined)) return "gem";
   if (/buzz|breaking|headline|news|happening|spotlight|big buzz|what matters/.test(combined)) return "megaphone";
   if (/calendar|event|festival|concert|show|weekend/.test(combined)) return "calendar";
   if (/food|restaurant|bite|drink|bottle|dining|eat/.test(combined)) return "fork";
@@ -83,7 +84,7 @@ function inferIcon(title = "", notes = "") {
   if (/fun|game|star|play|entertainment/.test(combined)) return "star";
 
   // Generic design notes should not force an unrelated icon.
-  return "spark";
+  return "megaphone";
 }
 
 function splitHeadline(title) {
@@ -222,7 +223,76 @@ function drawIcon(icon) {
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
 
-  if (icon === "megaphone") {
+  if (icon === "gem") {
+    // Dimensional faceted gemstone for Hidden Gems / discovery sections.
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    const gemGrad = ctx.createLinearGradient(-44, -42, 42, 46);
+    gemGrad.addColorStop(0, "#FFF6B0");
+    gemGrad.addColorStop(.18, "#FFD85A");
+    gemGrad.addColorStop(.48, "#FFAE24");
+    gemGrad.addColorStop(.78, "#E47D10");
+    gemGrad.addColorStop(1, "#9C4704");
+
+    ctx.shadowColor = "rgba(22,92,220,.75)";
+    ctx.shadowBlur = 18;
+    ctx.shadowOffsetY = 4;
+
+    ctx.fillStyle = gemGrad;
+    ctx.beginPath();
+    ctx.moveTo(-42, -20);
+    ctx.lineTo(-22, -43);
+    ctx.lineTo(24, -43);
+    ctx.lineTo(44, -20);
+    ctx.lineTo(0, 48);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = "rgba(126,55,2,.5)";
+    ctx.lineWidth = 2.5;
+
+    ctx.beginPath();
+    ctx.moveTo(-42, -20);
+    ctx.lineTo(44, -20);
+    ctx.moveTo(-22, -43);
+    ctx.lineTo(0, 48);
+    ctx.moveTo(24, -43);
+    ctx.lineTo(0, 48);
+    ctx.moveTo(-42, -20);
+    ctx.lineTo(0, 48);
+    ctx.moveTo(44, -20);
+    ctx.lineTo(0, 48);
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(255,255,255,.72)";
+    ctx.beginPath();
+    ctx.moveTo(-19, -36);
+    ctx.lineTo(3, -36);
+    ctx.lineTo(-7, -24);
+    ctx.lineTo(-28, -24);
+    ctx.closePath();
+    ctx.fill();
+
+    // Small sparkle accents around the gem.
+    ctx.fillStyle = "#FFF1A3";
+    [[-56,-29,5],[54,-10,4],[-48,26,3]].forEach(([x,y,r]) => {
+      ctx.beginPath();
+      ctx.moveTo(x, y-r*2);
+      ctx.lineTo(x+r*.7, y-r*.7);
+      ctx.lineTo(x+r*2, y);
+      ctx.lineTo(x+r*.7, y+r*.7);
+      ctx.lineTo(x, y+r*2);
+      ctx.lineTo(x-r*.7, y+r*.7);
+      ctx.lineTo(x-r*2, y);
+      ctx.lineTo(x-r*.7, y-r*.7);
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    ctx.restore();
+  } else if (icon === "megaphone") {
     // Polished megaphone illustration for news/buzz/headline sections.
     ctx.save();
     ctx.translate(cx, cy);
