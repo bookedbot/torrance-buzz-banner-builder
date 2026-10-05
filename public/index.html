@@ -65,6 +65,18 @@
           </select>
         </label>
 
+        <div class="reference-box">
+          <div>
+            <strong>Upload custom icon</strong>
+            <p class="muted tiny">PNG, JPG or WebP. It replaces the built-in icon for this banner.</p>
+          </div>
+          <input id="customIcon" type="file" accept="image/png,image/jpeg,image/webp" />
+          <div class="icon-tools">
+            <img id="customIconPreview" alt="Custom icon preview" hidden />
+            <button id="clearCustomIcon" class="ghost" type="button" hidden>Remove icon</button>
+          </div>
+        </div>
+
         <label>
           Design notes
           <textarea id="notes" rows="3" placeholder="Example: energetic but still clean and professional"></textarea>
