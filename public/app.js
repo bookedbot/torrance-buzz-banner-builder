@@ -77,6 +77,7 @@ function inferIcon(title = "", notes = "") {
   if (/^the buzz in 60 seconds$/.test(t)) return "lightning";
   if (/^this week'?s big buzz$/.test(t)) return "megaphone";
   if (/hidden gems/.test(t)) return "gem";
+  if (/torrance explained/.test(t)) return "compass";
   if (/^events radar$/.test(t)) return "calendar";
   if (/bites\s*&\s*bottles/.test(t)) return "fork";
   if (/city hall watch/.test(t)) return "civic";
@@ -86,7 +87,8 @@ function inferIcon(title = "", notes = "") {
   // Design notes can refine an unknown/new banner.
   if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(n)) return "brain";
   if (/lightning|thunder|bolt|electric|speed|fast/.test(n)) return "lightning";
-  if (/gem|gems|discover|discovery|small business|shop local/.test(n)) return "gem";
+  if (/gem|gems|small business|shop local/.test(n)) return "gem";
+  if (/explained|explain|history|mystery|mysteries|story|stories|places|discover|discovery|explore|guide/.test(n)) return "compass";
   if (/megaphone|headline|news|breaking|buzz/.test(n)) return "megaphone";
   if (/calendar|event|festival|concert|weekend/.test(n)) return "calendar";
   if (/food|restaurant|bite|drink|bottle|dining|eat/.test(n)) return "fork";
@@ -97,6 +99,7 @@ function inferIcon(title = "", notes = "") {
   if (/fun|game|star|play|entertainment/.test(n)) return "star";
 
   // If notes are generic, infer conservatively from title.
+  if (/explained|history|mystery|stories|places|discover|explore|guide/.test(t)) return "compass";
   if (/event|festival|concert|weekend/.test(t)) return "calendar";
   if (/food|restaurant|bite|drink|bottle|dining/.test(t)) return "fork";
   if (/home|housing|property|real estate/.test(t)) return "home";
@@ -245,7 +248,77 @@ function drawIcon(icon) {
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
 
-  if (icon === "gem") {
+  if (icon === "compass") {
+    // Dimensional compass for Torrance Explained / discovery sections.
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    ctx.shadowColor = "rgba(25,93,220,.75)";
+    ctx.shadowBlur = 18;
+    ctx.shadowOffsetY = 4;
+
+    const rim = ctx.createRadialGradient(-12, -15, 5, 0, 0, 56);
+    rim.addColorStop(0, "#FFF1A0");
+    rim.addColorStop(.35, "#FFC644");
+    rim.addColorStop(.72, "#EF9318");
+    rim.addColorStop(1, "#A94B05");
+
+    ctx.fillStyle = rim;
+    ctx.beginPath();
+    ctx.arc(0, 0, 52, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    const face = ctx.createRadialGradient(-10, -12, 4, 0, 0, 42);
+    face.addColorStop(0, "#174D9A");
+    face.addColorStop(.55, "#0B2F6C");
+    face.addColorStop(1, "#061A47");
+    ctx.fillStyle = face;
+    ctx.beginPath();
+    ctx.arc(0, 0, 42, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(255,255,255,.45)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, 0, 35, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Needle.
+    ctx.fillStyle = "#FFD34A";
+    ctx.beginPath();
+    ctx.moveTo(0, -31);
+    ctx.lineTo(10, 5);
+    ctx.lineTo(0, 0);
+    ctx.lineTo(-8, 5);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#F07E16";
+    ctx.beginPath();
+    ctx.moveTo(0, 31);
+    ctx.lineTo(-9, -4);
+    ctx.lineTo(0, 0);
+    ctx.lineTo(8, -4);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#F6F1DE";
+    ctx.font = "800 11px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("N", 0, -24);
+    ctx.fillText("S", 0, 25);
+    ctx.fillText("W", -25, 1);
+    ctx.fillText("E", 25, 1);
+
+    ctx.fillStyle = "rgba(255,255,255,.65)";
+    ctx.beginPath();
+    ctx.ellipse(-18, -22, 15, 5, -.55, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.restore();
+  } else if (icon === "gem") {
     // Dimensional faceted gemstone for Hidden Gems / discovery sections.
     ctx.save();
     ctx.translate(cx, cy);
