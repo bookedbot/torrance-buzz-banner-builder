@@ -67,6 +67,7 @@ function iconGlyph(name) {
 
 function iconFromNotes(text = "") {
   const t = text.toLowerCase();
+  if (/lightning|thunder|bolt|electric|fast|speed/.test(t)) return "lightning";
   if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(t)) return "brain";
   if (/calendar|event|festival|concert/.test(t)) return "calendar";
   if (/food|restaurant|bite|drink|bottle/.test(t)) return "fork";
@@ -186,7 +187,56 @@ function drawIcon(icon) {
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
 
-  if (icon === "brain") {
+  if (icon === "lightning") {
+    // Dimensional lightning bolt with metallic gold face and blue glow.
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    const bolt = ctx.createLinearGradient(-30, -50, 30, 50);
+    bolt.addColorStop(0, "#FFF3A3");
+    bolt.addColorStop(.28, "#FFD34A");
+    bolt.addColorStop(.62, "#F7A51D");
+    bolt.addColorStop(1, "#B85A07");
+
+    ctx.shadowColor = "rgba(36,111,255,.85)";
+    ctx.shadowBlur = 18;
+    ctx.shadowOffsetY = 4;
+    ctx.fillStyle = bolt;
+
+    ctx.beginPath();
+    ctx.moveTo(12, -54);
+    ctx.lineTo(-27, 6);
+    ctx.lineTo(-5, 6);
+    ctx.lineTo(-24, 52);
+    ctx.lineTo(30, -12);
+    ctx.lineTo(7, -12);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "rgba(255,255,255,.72)";
+    ctx.beginPath();
+    ctx.moveTo(5, -43);
+    ctx.lineTo(-16, -6);
+    ctx.lineTo(-6, -6);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(255,182,32,.72)";
+    ctx.lineWidth = 3;
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.moveTo(-54 - i*3, -24 + i*25);
+      ctx.lineTo(-37 - i*2, -16 + i*25);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(48 + i*2, -21 + i*24);
+      ctx.lineTo(63 + i*3, -13 + i*24);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  } else if (icon === "brain") {
     // Dimensional brain illustration: recognizable lobes, midline and grooves.
     ctx.save();
     ctx.translate(cx, cy);
