@@ -31,6 +31,13 @@ cityHallAsset.onload = () => {
 };
 cityHallAsset.src = "/icons/Golden%20Courthouse%20and%20Gavel%20Emblem.png";
 
+const healthWatchAsset = new Image();
+healthWatchAsset.onload = () => {
+  premiumAssets.health = healthWatchAsset;
+  render();
+};
+healthWatchAsset.src = "/icons/Golden%20Heart%20Medical%20Cross%20with%20Stethoscope.png";
+
 const presets = {
   events: {
     title: "Events Radar",
@@ -98,6 +105,7 @@ function inferIcon(title = "", notes = "") {
   if (/city hall watch/.test(t)) return "civic";
   if (/torrance homefront/.test(t)) return "home";
   if (/buzz alerts/.test(t)) return "alert";
+  if (/health watch/.test(t)) return "health";
 
   // Design notes guide new or unfamiliar banners.
   if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(n)) return "brain";
@@ -113,6 +121,7 @@ function inferIcon(title = "", notes = "") {
   if (/home|house|housing|real estate|property|mortgage/.test(n)) return "home";
   if (/alert|warning|traffic|closure|advisory|emergency/.test(n)) return "alert";
   if (/city|council|government|civic|planning|commission/.test(n)) return "civic";
+  if (/health|medical|doctor|hospital|wellness|stethoscope|heart|clinic/.test(n)) return "health";
   if (/weather|sun|heat|rain|forecast|temperature/.test(n)) return "sun";
   if (/fun|game|star|play|entertainment/.test(n)) return "star";
 
