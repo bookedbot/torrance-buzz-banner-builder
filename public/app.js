@@ -60,8 +60,22 @@ function iconGlyph(name) {
     alert: "!",
     civic: "▥",
     sun: "☀",
-    star: "★"
+    star: "★",
+    brain: "?"
   }[name] || "✦";
+}
+
+function iconFromNotes(text = "") {
+  const t = text.toLowerCase();
+  if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(t)) return "brain";
+  if (/calendar|event|festival|concert/.test(t)) return "calendar";
+  if (/food|restaurant|bite|drink|bottle/.test(t)) return "fork";
+  if (/home|house|housing|real estate/.test(t)) return "home";
+  if (/alert|warning|traffic|closure/.test(t)) return "alert";
+  if (/city|council|hall|government/.test(t)) return "civic";
+  if (/weather|sun|heat|rain/.test(t)) return "sun";
+  if (/fun|game|star/.test(t)) return "star";
+  return null;
 }
 
 function splitHeadline(title) {
@@ -172,7 +186,74 @@ function drawIcon(icon) {
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
 
-  if (icon === "star") {
+  if (icon === "brain") {
+    // Dimensional brain illustration: recognizable lobes, midline and grooves.
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    const brainFill = ctx.createLinearGradient(-48, -42, 45, 46);
+    brainFill.addColorStop(0, "#FFE48A");
+    brainFill.addColorStop(.25, "#FFC247");
+    brainFill.addColorStop(.58, "#F59A1F");
+    brainFill.addColorStop(1, "#B95B08");
+
+    ctx.fillStyle = brainFill;
+    ctx.strokeStyle = "#FFD466";
+    ctx.lineWidth = 3;
+    ctx.shadowColor = "rgba(0,0,0,.5)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetY = 4;
+
+    ctx.beginPath();
+    ctx.moveTo(0, -42);
+    ctx.bezierCurveTo(-18, -53, -38, -45, -43, -28);
+    ctx.bezierCurveTo(-61, -27, -66, -5, -54, 6);
+    ctx.bezierCurveTo(-63, 23, -45, 40, -29, 35);
+    ctx.bezierCurveTo(-21, 50, -2, 51, 0, 38);
+    ctx.bezierCurveTo(4, 51, 23, 50, 29, 35);
+    ctx.bezierCurveTo(48, 41, 64, 24, 54, 6);
+    ctx.bezierCurveTo(67, -5, 61, -27, 43, -28);
+    ctx.bezierCurveTo(39, -45, 17, -53, 0, -42);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = "rgba(108,48,4,.58)";
+    ctx.lineWidth = 3;
+
+    const grooves = [
+      [-28,-28,-38,-16,-25,-8],
+      [-18,-37,-8,-25,-16,-13],
+      [-38,-2,-28,7,-35,18],
+      [-22,7,-11,15,-19,28],
+      [25,-29,38,-18,25,-8],
+      [18,-37,7,-24,16,-13],
+      [38,-1,28,8,35,18],
+      [23,7,11,15,19,28]
+    ];
+
+    grooves.forEach(([x1,y1,cx1,cy1,x2,y2]) => {
+      ctx.beginPath();
+      ctx.moveTo(x1,y1);
+      ctx.quadraticCurveTo(cx1,cy1,x2,y2);
+      ctx.stroke();
+    });
+
+    ctx.strokeStyle = "rgba(94,41,3,.72)";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(0,-40);
+    ctx.bezierCurveTo(-3,-16,3,10,0,39);
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(255,255,255,.6)";
+    ctx.beginPath();
+    ctx.ellipse(-22,-27,14,5,-.5,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.restore();
+  } else if (icon === "star") {
     // Trivia: dimensional quiz badge with question mark.
     ctx.fillStyle = gold;
     ctx.beginPath();
@@ -476,7 +557,8 @@ function saveCurrentState() {
     subtitle: $("subtitle").value,
     layout: $("layout").value,
     accent: $("accent").value,
-    icon: $("icon").value
+    icon: $("icon").value,
+    notes: $("notes").value
   };
   localStorage.setItem("tbwLastPreset", JSON.stringify(saved));
 }
@@ -490,6 +572,13 @@ function saveCurrentState() {
     render();
     saveCurrentState();
   });
+});
+
+$("notes").addEventListener("input", () => {
+  const suggested = iconFromNotes($("notes").value);
+  if (suggested) $("icon").value = suggested;
+  render();
+  saveCurrentState();
 });
 
 document.querySelectorAll("[data-preset]").forEach((button) => {
