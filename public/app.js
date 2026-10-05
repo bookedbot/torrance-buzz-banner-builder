@@ -12,6 +12,8 @@ const brand = {
 };
 
 let referenceImage = null;
+let customIconImage = null;
+let customIconDataUrl = null;
 
 const presets = {
   events: {
@@ -153,6 +155,34 @@ function drawAccent(type) {
   }
 
   ctx.restore();
+}
+
+function drawCustomIcon() {
+  if (!customIconImage) return false;
+
+  const boxX = 56;
+  const boxY = 17;
+  const boxW = 120;
+  const boxH = 116;
+
+  const iw = customIconImage.naturalWidth || customIconImage.width;
+  const ih = customIconImage.naturalHeight || customIconImage.height;
+  if (!iw || !ih) return false;
+
+  const scale = Math.min(boxW / iw, boxH / ih);
+  const w = iw * scale;
+  const h = ih * scale;
+  const x = boxX + (boxW - w) / 2;
+  const y = boxY + (boxH - h) / 2;
+
+  ctx.save();
+  ctx.shadowColor = "rgba(17,79,196,.55)";
+  ctx.shadowBlur = 14;
+  ctx.shadowOffsetY = 3;
+  ctx.drawImage(customIconImage, x, y, w, h);
+  ctx.restore();
+
+  return true;
 }
 
 function drawIcon(icon) {
@@ -537,7 +567,7 @@ function render() {
   ctx.clearRect(0, 0, 1200, 150);
   drawMasterBackground();
   drawAccent(accent);
-  drawIcon(icon);
+  if (!drawCustomIcon()) drawIcon(icon);
 
   const { first, last } = splitHeadline(title);
 
@@ -608,7 +638,8 @@ function saveCurrentState() {
     layout: $("layout").value,
     accent: $("accent").value,
     icon: $("icon").value,
-    notes: $("notes").value
+    notes: $("notes").value,
+    customIconDataUrl
   };
   localStorage.setItem("tbwLastPreset", JSON.stringify(saved));
 }
@@ -640,6 +671,42 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
     render();
     saveCurrentState();
   });
+});
+
+$("customIcon").addEventListener("change", (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    customIconDataUrl = reader.result;
+    const image = new Image();
+    image.onload = () => {
+      customIconImage = image;
+      $("customIconPreview").src = customIconDataUrl;
+      $("customIconPreview").hidden = false;
+      $("clearCustomIcon").hidden = false;
+      render();
+      saveCurrentState();
+      $("assistStatus").textContent = "Custom icon loaded and saved for this banner.";
+    };
+    image.src = customIconDataUrl;
+  };
+
+  reader.readAsDataURL(file);
+});
+
+$("clearCustomIcon").addEventListener("click", () => {
+  customIconImage = null;
+  customIconDataUrl = null;
+  $("customIcon").value = "";
+  $("customIconPreview").hidden = true;
+  $("customIconPreview").src = "";
+  $("clearCustomIcon").hidden = true;
+  render();
+  saveCurrentState();
+  $("assistStatus").textContent = "Custom icon removed. Built-in icon restored.";
 });
 
 $("reference").addEventListener("change", (event) => {
@@ -720,8 +787,21 @@ try {
 
   if (saved) {
     Object.entries(saved).forEach(([key, value]) => {
-      if ($(key)) $(key).value = value;
+      if ($(key) && key !== "customIconDataUrl") $(key).value = value;
     });
+
+    if (saved.customIconDataUrl) {
+      customIconDataUrl = saved.customIconDataUrl;
+      const image = new Image();
+      image.onload = () => {
+        customIconImage = image;
+        $("customIconPreview").src = customIconDataUrl;
+        $("customIconPreview").hidden = false;
+        $("clearCustomIcon").hidden = false;
+        render();
+      };
+      image.src = customIconDataUrl;
+    }
   }
 
   referenceImage = localStorage.getItem("tbwReference");
