@@ -87,6 +87,19 @@ function inferIcon(title = "", notes = "") {
   const t = title.toLowerCase().trim();
   const n = notes.toLowerCase().trim();
 
+  // Known newsletter sections always use their approved section visual first.
+  if (/^trivia time$/.test(t)) return "brain";
+  if (/^the buzz in 60 seconds$/.test(t)) return "lightning";
+  if (/^this week'?s big buzz$/.test(t)) return "megaphone";
+  if (/hidden gems/.test(t)) return "gem";
+  if (/torrance explained/.test(t)) return "compass";
+  if (/^events radar$/.test(t)) return "calendar";
+  if (/bites\s*&\s*bottles/.test(t)) return "fooddrink";
+  if (/city hall watch/.test(t)) return "civic";
+  if (/torrance homefront/.test(t)) return "home";
+  if (/buzz alerts/.test(t)) return "alert";
+
+  // Design notes guide new or unfamiliar banners.
   if (/brain|mind|memory|thinking|knowledge|quiz|trivia/.test(n)) return "brain";
   if (/lightning|thunder|bolt|electric|speed|fast/.test(n)) return "lightning";
   if (/gem|gems|diamond|jewel|treasure/.test(n)) return "gem";
@@ -102,17 +115,6 @@ function inferIcon(title = "", notes = "") {
   if (/city|council|government|civic|planning|commission/.test(n)) return "civic";
   if (/weather|sun|heat|rain|forecast|temperature/.test(n)) return "sun";
   if (/fun|game|star|play|entertainment/.test(n)) return "star";
-
-  if (/^trivia time$/.test(t)) return "brain";
-  if (/^the buzz in 60 seconds$/.test(t)) return "lightning";
-  if (/^this week'?s big buzz$/.test(t)) return "megaphone";
-  if (/hidden gems/.test(t)) return "gem";
-  if (/torrance explained/.test(t)) return "compass";
-  if (/^events radar$/.test(t)) return "calendar";
-  if (/bites\s*&\s*bottles/.test(t)) return "fooddrink";
-  if (/city hall watch/.test(t)) return "civic";
-  if (/torrance homefront/.test(t)) return "home";
-  if (/buzz alerts/.test(t)) return "alert";
 
   if (/event|festival|concert|weekend/.test(t)) return "calendar";
   if (/food|restaurant|bite|drink|bottle|dining/.test(t)) return "fork";
