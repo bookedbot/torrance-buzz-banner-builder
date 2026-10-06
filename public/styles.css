@@ -273,3 +273,26 @@ button:hover { filter: brightness(.97); }
 .premium-button:disabled{opacity:.6;cursor:wait}
 .premium-actions{display:flex;gap:8px;margin-top:10px}
 .premium-actions button{flex:1}
+
+.premium-icon-box{
+  margin-top:12px;
+  padding:14px;
+  border:1px solid #ecd6a2;
+  border-radius:12px;
+  background:linear-gradient(180deg,#fffdf7 0%,#fff8e9 100%);
+}
+.premium-icon-preview{
+  margin-top:10px;
+  padding:10px;
+  border-radius:10px;
+  background:#081e4a;
+  border:1px solid #d9e1ec;
+  text-align:center;
+}
+.premium-icon-preview img{
+  display:block;
+  width:112px;
+  height:112px;
+  margin:0 auto;
+  object-fit:contain;
+}
