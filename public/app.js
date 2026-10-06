@@ -1208,10 +1208,34 @@ function drawPremiumBannerBackground() {
   return true;
 }
 
+function getTextOffset() {
+  return Number($("textOffset")?.value || 0);
+}
+
+function drawDividerLine(startX, y, centered = false) {
+  if (!$("dividerEnabled")?.checked) return;
+
+  const length = Number($("dividerLength")?.value || 520);
+  const color = $("dividerColor")?.value || "#2F78D0";
+  const x = centered ? startX - length / 2 : startX;
+
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 5;
+  ctx.globalAlpha = .92;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + length, y);
+  ctx.stroke();
+  ctx.restore();
+}
+
 function drawPremiumText(title, subtitle) {
   const { first, last } = splitHeadline(title);
-  const headlineX = 300;
-  const maxWidth = 815;
+  const headlineX = 300 + getTextOffset();
+  const maxWidth = Math.max(360, 815 - Math.max(0, getTextOffset()));
   const fontSize = fitTitle(first, last, maxWidth, 50, 28);
 
   ctx.textBaseline = "middle";
@@ -1227,6 +1251,8 @@ function drawPremiumText(title, subtitle) {
     ctx.fillStyle = brand.orange;
     ctx.fillText(last, headlineX + firstWidth + 17, 58);
   }
+
+  drawDividerLine(headlineX + 34, 86, false);
 
   ctx.shadowBlur = 2;
   if (subtitle) {
@@ -1274,17 +1300,18 @@ function render() {
 
   const { first, last } = splitHeadline(title);
 
-  let headlineX = 220;
+  const textOffset = getTextOffset();
+  let headlineX = 220 + textOffset;
   let headlineY = 58;
-  let maxWidth = 890;
+  let maxWidth = Math.max(360, 890 - Math.max(0, textOffset));
 
   if (layout === "centered") {
-    headlineX = 600;
+    headlineX = 600 + textOffset;
     headlineY = 58;
     maxWidth = 780;
   } else if (layout === "split") {
-    headlineX = 245;
-    maxWidth = 760;
+    headlineX = 245 + textOffset;
+    maxWidth = Math.max(340, 760 - Math.max(0, textOffset));
   }
 
   const fontSize = fitTitle(first, last, maxWidth);
@@ -1325,6 +1352,12 @@ function render() {
 
   ctx.shadowBlur = 0;
 
+  if (layout === "centered") {
+    drawDividerLine(headlineX, 86, true);
+  } else {
+    drawDividerLine(headlineX + 38, 86, false);
+  }
+
   if (subtitle) {
     ctx.font = "500 25px Arial, sans-serif";
     ctx.fillStyle = "rgba(255,255,255,.94)";
@@ -1358,6 +1391,10 @@ function saveCurrentState() {
     customIconDataUrl,
     customIconBannerKey,
     iconVariant,
+    textOffset: $("textOffset")?.value || "0",
+    dividerEnabled: Boolean($("dividerEnabled")?.checked),
+    dividerColor: $("dividerColor")?.value || "#2F78D0",
+    dividerLength: $("dividerLength")?.value || "520",
     premiumBannerAccepted
   };
   localStorage.setItem("tbwLastPreset", JSON.stringify(saved));
@@ -1390,6 +1427,18 @@ $("notes").addEventListener("input", () => {
   if (suggested) $("icon").value = suggested;
   markPremiumNeedsRefresh();
   markPremiumIconNeedsRefresh();
+  render();
+  saveCurrentState();
+});
+
+["textOffset", "dividerColor", "dividerLength"].forEach((id) => {
+  $(id)?.addEventListener("input", () => {
+    render();
+    saveCurrentState();
+  });
+});
+
+$("dividerEnabled")?.addEventListener("change", () => {
   render();
   saveCurrentState();
 });
@@ -1697,7 +1746,10 @@ try {
 
   if (saved) {
     Object.entries(saved).forEach(([key, value]) => {
-      if ($(key) && key !== "customIconDataUrl" && key !== "customIconBannerKey") $(key).value = value;
+      const el = $(key);
+      if (!el || key === "customIconDataUrl" || key === "customIconBannerKey") return;
+      if (el.type === "checkbox") el.checked = Boolean(value);
+      else el.value = value;
     });
 
     if (Number.isInteger(saved.iconVariant)) iconVariant = saved.iconVariant;
