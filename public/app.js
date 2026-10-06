@@ -1163,47 +1163,14 @@ function getUploadedContentBounds(image) {
 function drawWorkingUploadedBanner() {
   if (!workingUploadedBannerImage || !workingUploadedBannerImage.complete || !workingUploadedBannerImage.naturalWidth) return false;
 
-  const iw = workingUploadedBannerImage.naturalWidth;
-  const ih = workingUploadedBannerImage.naturalHeight;
   const bounds = getUploadedContentBounds(workingUploadedBannerImage);
 
-  // First fill the entire 1200×150 canvas with a softened extension
-  // of the uploaded banner so there are no empty side bars.
-  const coverScale = Math.max(1200 / bounds.w, 150 / bounds.h);
-  const coverW = bounds.w * coverScale;
-  const coverH = bounds.h * coverScale;
-  const coverX = (1200 - coverW) / 2;
-  const coverY = (150 - coverH) / 2;
-
-  ctx.save();
-  ctx.filter = "blur(18px) brightness(0.72) saturate(0.95)";
+  // Use the actual uploaded banner content and resize it to the locked
+  // 1200×150 output. Do not add side bars, blur extensions, or crop content.
   ctx.drawImage(
     workingUploadedBannerImage,
     bounds.x, bounds.y, bounds.w, bounds.h,
-    coverX, coverY, coverW, coverH
-  );
-  ctx.restore();
-
-  // Add a subtle navy veil so the extended sides blend with TBW styling.
-  const veil = ctx.createLinearGradient(0, 0, 1200, 0);
-  veil.addColorStop(0, "rgba(1,16,55,.42)");
-  veil.addColorStop(.22, "rgba(1,16,55,.10)");
-  veil.addColorStop(.78, "rgba(1,16,55,.10)");
-  veil.addColorStop(1, "rgba(1,16,55,.42)");
-  ctx.fillStyle = veil;
-  ctx.fillRect(0, 0, 1200, 150);
-
-  // Then place the complete original banner on top without cropping.
-  const fitScale = Math.min(1200 / bounds.w, 150 / bounds.h);
-  const w = bounds.w * fitScale;
-  const h = bounds.h * fitScale;
-  const x = (1200 - w) / 2;
-  const y = (150 - h) / 2;
-
-  ctx.drawImage(
-    workingUploadedBannerImage,
-    bounds.x, bounds.y, bounds.w, bounds.h,
-    x, y, w, h
+    0, 0, 1200, 150
   );
 
   return true;
