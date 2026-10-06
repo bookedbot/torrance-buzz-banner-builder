@@ -1394,6 +1394,14 @@ $("usePremiumIcon").addEventListener("click", () => {
   customIconDataUrl = premiumIconDataUrl;
   customIconBannerKey = currentBannerKey();
 
+  // Premium Icon and Premium Banner are separate modes.
+  // Selecting an icon returns the main preview to the normal banner layout.
+  premiumBannerImage = null;
+  premiumBannerDataUrl = null;
+  premiumBannerAccepted = false;
+  $("premiumActions").hidden = true;
+  $("premiumStatus").textContent = "Premium Banner mode is off. Generate one anytime if you want full-scene artwork.";
+
   $("customIconPreview").src = premiumIconDataUrl;
   $("customIconPreview").hidden = false;
   $("clearCustomIcon").hidden = false;
@@ -1401,7 +1409,7 @@ $("usePremiumIcon").addEventListener("click", () => {
   render();
   saveCurrentState();
 
-  $("premiumIconStatus").textContent = "Premium icon selected for this banner.";
+  $("premiumIconStatus").textContent = "Premium icon selected and applied to this banner.";
   $("assistStatus").textContent = "Premium icon is now being used for this banner.";
 });
 
