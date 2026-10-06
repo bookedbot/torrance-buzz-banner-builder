@@ -36,6 +36,76 @@ app.post("/api/assist", (req, res) => {
   res.json(localAssist(title, notes));
 });
 
+app.post("/api/premium-icon", async (req, res) => {
+  const { title = "", notes = "" } = req.body || {};
+
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(503).json({
+      error: "missing_api_key",
+      message: "Premium Icon generation needs an OpenAI API key configured on Railway."
+    });
+  }
+
+  const prompt = [
+    "Create one premium standalone icon for The Torrance Buzz Weekly newsletter.",
+    "Transparent background. Square composition. One cohesive subject only.",
+    "Do not render any text, letters, labels, logos, captions, frames, badges, or watermarks.",
+    "Style benchmark: polished high-end 3D editorial illustration, photorealistic CGI quality, crisp silhouette, dimensional shading, rich reflections and highlights, professional rather than cartoonish.",
+    "Brand styling: premium gold and orange highlights, deep navy/blue materials where useful, subtle cool blue rim lighting, strong contrast, clean readable silhouette at small size.",
+    "Keep the complete object inside the canvas with comfortable transparent padding around all edges.",
+    `Banner title/context: ${title || "Torrance local news"}.`,
+    notes ? `Editor's visual direction: ${notes}.` : "",
+    "Make the icon immediately understandable and visually specific to this section."
+  ].filter(Boolean).join(" ");
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2",
+        prompt,
+        size: "1024x1024",
+        quality: "low",
+        background: "transparent",
+        output_format: "png"
+      })
+    });
+
+    const payload = await response.json();
+
+    if (!response.ok) {
+      console.error("Premium icon generation failed", payload);
+      return res.status(response.status).json({
+        error: "generation_failed",
+        message: payload?.error?.message || "Premium icon generation failed."
+      });
+    }
+
+    const imageBase64 = payload?.data?.[0]?.b64_json;
+    if (!imageBase64) {
+      return res.status(502).json({
+        error: "empty_image",
+        message: "The image service returned no icon."
+      });
+    }
+
+    return res.json({
+      image: `data:image/png;base64,${imageBase64}`,
+      model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2"
+    });
+  } catch (error) {
+    console.error("Premium icon generation error", error);
+    return res.status(500).json({
+      error: "generation_error",
+      message: "Premium Icon generation could not complete."
+    });
+  }
+});
+
 app.post("/api/premium-banner", async (req, res) => {
   const { title = "", subtitle = "", notes = "" } = req.body || {};
 
