@@ -1069,20 +1069,18 @@ function drawWorkingUploadedBanner() {
 
   const iw = workingUploadedBannerImage.naturalWidth;
   const ih = workingUploadedBannerImage.naturalHeight;
-  const targetRatio = 1200 / 150;
-  const imageRatio = iw / ih;
 
-  let sx = 0, sy = 0, sw = iw, sh = ih;
+  // Preserve the full uploaded banner. Never crop away existing artwork or text.
+  ctx.fillStyle = "#011037";
+  ctx.fillRect(0, 0, 1200, 150);
 
-  if (imageRatio > targetRatio) {
-    sw = ih * targetRatio;
-    sx = (iw - sw) / 2;
-  } else {
-    sh = iw / targetRatio;
-    sy = (ih - sh) / 2;
-  }
+  const scale = Math.min(1200 / iw, 150 / ih);
+  const w = iw * scale;
+  const h = ih * scale;
+  const x = (1200 - w) / 2;
+  const y = (150 - h) / 2;
 
-  ctx.drawImage(workingUploadedBannerImage, sx, sy, sw, sh, 0, 0, 1200, 150);
+  ctx.drawImage(workingUploadedBannerImage, 0, 0, iw, ih, x, y, w, h);
   return true;
 }
 
