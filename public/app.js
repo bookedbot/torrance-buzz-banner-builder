@@ -19,6 +19,8 @@ let iconVariant = 0;
 let premiumBannerImage = null;
 let premiumBannerDataUrl = null;
 let premiumBannerAccepted = false;
+let premiumIconDataUrl = null;
+let premiumIconImage = null;
 const premiumAssets = {};
 const bitesAsset = new Image();
 bitesAsset.onload = () => {
@@ -1203,6 +1205,12 @@ function render() {
   }
 }
 
+function markPremiumIconNeedsRefresh() {
+  if (premiumIconImage) {
+    $("premiumIconStatus").textContent = "Title or Design notes changed. Generate another icon if you want it matched to the new direction.";
+  }
+}
+
 function markPremiumNeedsRefresh() {
   if (premiumBannerImage) {
     premiumBannerAccepted = false;
@@ -1232,7 +1240,10 @@ function saveCurrentState() {
       $("icon").value = inferIcon($("title").value, $("notes").value);
       iconVariant = 0;
     }
-    if (id === "title" || id === "subtitle") markPremiumNeedsRefresh();
+    if (id === "title" || id === "subtitle") {
+      markPremiumNeedsRefresh();
+      if (id === "title") markPremiumIconNeedsRefresh();
+    }
     render();
     saveCurrentState();
   });
@@ -1249,6 +1260,7 @@ $("notes").addEventListener("input", () => {
   const suggested = inferIcon($("title").value, $("notes").value);
   if (suggested) $("icon").value = suggested;
   markPremiumNeedsRefresh();
+  markPremiumIconNeedsRefresh();
   render();
   saveCurrentState();
 });
@@ -1323,6 +1335,74 @@ $("reference").addEventListener("change", (event) => {
   };
 
   reader.readAsDataURL(file);
+});
+
+async function generatePremiumIcon() {
+  const button = $("generatePremiumIcon");
+  const status = $("premiumIconStatus");
+  const actions = $("premiumIconActions");
+  const previewWrap = $("premiumIconPreviewWrap");
+
+  button.disabled = true;
+  status.textContent = "Creating a premium transparent icon… this can take a little while.";
+  actions.hidden = true;
+
+  try {
+    const response = await fetch("/api/premium-icon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: $("title").value,
+        notes: $("notes").value
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      status.textContent = data.message || "Premium icon generation failed.";
+      return;
+    }
+
+    const image = new Image();
+    image.onload = () => {
+      premiumIconDataUrl = data.image;
+      premiumIconImage = image;
+      $("premiumIconPreview").src = data.image;
+      previewWrap.hidden = false;
+      actions.hidden = false;
+      status.textContent = "Premium icon generated. Use it or generate another.";
+    };
+    image.onerror = () => {
+      status.textContent = "The generated premium icon could not be loaded.";
+    };
+    image.src = data.image;
+  } catch (error) {
+    status.textContent = "Premium icon generation could not connect.";
+  } finally {
+    button.disabled = false;
+  }
+}
+
+$("generatePremiumIcon").addEventListener("click", generatePremiumIcon);
+$("generateAnotherIcon").addEventListener("click", generatePremiumIcon);
+
+$("usePremiumIcon").addEventListener("click", () => {
+  if (!premiumIconImage || !premiumIconDataUrl) return;
+
+  customIconImage = premiumIconImage;
+  customIconDataUrl = premiumIconDataUrl;
+  customIconBannerKey = currentBannerKey();
+
+  $("customIconPreview").src = premiumIconDataUrl;
+  $("customIconPreview").hidden = false;
+  $("clearCustomIcon").hidden = false;
+
+  render();
+  saveCurrentState();
+
+  $("premiumIconStatus").textContent = "Premium icon selected for this banner.";
+  $("assistStatus").textContent = "Premium icon is now being used for this banner.";
 });
 
 async function generatePremiumBanner() {
