@@ -67,6 +67,23 @@
 
         <button id="newIcon" class="secondary new-icon-btn" type="button">↻ Create New Icon</button>
 
+        <div class="premium-icon-box">
+          <div class="premium-heading">
+            <strong>Premium Icon</strong>
+            <span class="premium-badge">AI artwork</span>
+          </div>
+          <p class="muted tiny">Creates one polished transparent icon from the banner title and Design notes.</p>
+          <button id="generatePremiumIcon" class="premium-button" type="button">✨ Generate Premium Icon</button>
+          <div id="premiumIconPreviewWrap" class="premium-icon-preview" hidden>
+            <img id="premiumIconPreview" alt="Generated premium icon preview" />
+          </div>
+          <p id="premiumIconStatus" class="status">AI image generation runs only when you click the button.</p>
+          <div id="premiumIconActions" class="premium-actions" hidden>
+            <button id="usePremiumIcon" class="primary" type="button">Use This Icon</button>
+            <button id="generateAnotherIcon" class="secondary" type="button">Generate Another</button>
+          </div>
+        </div>
+
         <div class="reference-box">
           <div>
             <strong>Upload custom icon</strong>
