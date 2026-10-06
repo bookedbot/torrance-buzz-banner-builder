@@ -51,6 +51,35 @@
           </label>
         </div>
 
+        <div class="fine-tune-box">
+          <strong>Fine Tune</strong>
+
+          <label class="range-control">
+            <span>Text position</span>
+            <div class="range-row">
+              <span class="range-end">Closer</span>
+              <input id="textOffset" type="range" min="-140" max="140" step="5" value="0" />
+              <span class="range-end">Farther</span>
+            </div>
+          </label>
+
+          <label class="inline-check divider-toggle">
+            <input id="dividerEnabled" type="checkbox" />
+            <span>Add divider line between title and subtitle</span>
+          </label>
+
+          <div class="divider-controls">
+            <label>
+              Line color
+              <input id="dividerColor" type="color" value="#2F78D0" />
+            </label>
+            <label>
+              Line length
+              <input id="dividerLength" type="range" min="100" max="800" step="10" value="520" />
+            </label>
+          </div>
+        </div>
+
         <label>
           Icon
           <select id="icon">
