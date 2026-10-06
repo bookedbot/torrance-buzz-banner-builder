@@ -1064,23 +1064,124 @@ function drawIcon(icon, variant = 0) {
   ctx.restore();
 }
 
+function getUploadedContentBounds(image) {
+  const iw = image.naturalWidth;
+  const ih = image.naturalHeight;
+
+  const maxSampleWidth = 900;
+  const scale = Math.min(1, maxSampleWidth / iw);
+  const sw = Math.max(1, Math.round(iw * scale));
+  const sh = Math.max(1, Math.round(ih * scale));
+
+  const off = document.createElement("canvas");
+  off.width = sw;
+  off.height = sh;
+  const octx = off.getContext("2d", { willReadFrequently: true });
+  octx.drawImage(image, 0, 0, sw, sh);
+
+  const data = octx.getImageData(0, 0, sw, sh).data;
+
+  const cornerSamples = [
+    [0,0],
+    [sw-1,0],
+    [0,sh-1],
+    [sw-1,sh-1]
+  ].map(([x,y]) => {
+    const i = (y * sw + x) * 4;
+    return [data[i], data[i+1], data[i+2], data[i+3]];
+  });
+
+  const bg = cornerSamples.reduce((acc,p) => {
+    acc[0]+=p[0]; acc[1]+=p[1]; acc[2]+=p[2]; acc[3]+=p[3];
+    return acc;
+  }, [0,0,0,0]).map(v => v / cornerSamples.length);
+
+  function differs(i) {
+    const a = data[i+3];
+    if (a < 16) return false;
+    const dr = data[i] - bg[0];
+    const dg = data[i+1] - bg[1];
+    const db = data[i+2] - bg[2];
+    const distance = Math.sqrt(dr*dr + dg*dg + db*db);
+    return distance > 28;
+  }
+
+  const rowThreshold = Math.max(3, Math.floor(sw * 0.035));
+  const colThreshold = Math.max(3, Math.floor(sh * 0.035));
+
+  let top = 0, bottom = sh - 1, left = 0, right = sw - 1;
+
+  for (let y = 0; y < sh; y++) {
+    let hits = 0;
+    for (let x = 0; x < sw; x += 2) {
+      if (differs((y * sw + x) * 4)) hits++;
+    }
+    if (hits >= rowThreshold) { top = y; break; }
+  }
+
+  for (let y = sh - 1; y >= 0; y--) {
+    let hits = 0;
+    for (let x = 0; x < sw; x += 2) {
+      if (differs((y * sw + x) * 4)) hits++;
+    }
+    if (hits >= rowThreshold) { bottom = y; break; }
+  }
+
+  for (let x = 0; x < sw; x++) {
+    let hits = 0;
+    for (let y = top; y <= bottom; y += 2) {
+      if (differs((y * sw + x) * 4)) hits++;
+    }
+    if (hits >= colThreshold) { left = x; break; }
+  }
+
+  for (let x = sw - 1; x >= 0; x--) {
+    let hits = 0;
+    for (let y = top; y <= bottom; y += 2) {
+      if (differs((y * sw + x) * 4)) hits++;
+    }
+    if (hits >= colThreshold) { right = x; break; }
+  }
+
+  const padX = Math.round((right - left + 1) * 0.015);
+  const padY = Math.round((bottom - top + 1) * 0.03);
+
+  left = Math.max(0, left - padX);
+  right = Math.min(sw - 1, right + padX);
+  top = Math.max(0, top - padY);
+  bottom = Math.min(sh - 1, bottom + padY);
+
+  const inv = 1 / scale;
+  return {
+    x: Math.max(0, Math.round(left * inv)),
+    y: Math.max(0, Math.round(top * inv)),
+    w: Math.min(iw, Math.round((right - left + 1) * inv)),
+    h: Math.min(ih, Math.round((bottom - top + 1) * inv))
+  };
+}
+
 function drawWorkingUploadedBanner() {
   if (!workingUploadedBannerImage || !workingUploadedBannerImage.complete || !workingUploadedBannerImage.naturalWidth) return false;
 
   const iw = workingUploadedBannerImage.naturalWidth;
   const ih = workingUploadedBannerImage.naturalHeight;
+  const bounds = getUploadedContentBounds(workingUploadedBannerImage);
 
-  // Preserve the full uploaded banner. Never crop away existing artwork or text.
   ctx.fillStyle = "#011037";
   ctx.fillRect(0, 0, 1200, 150);
 
-  const scale = Math.min(1200 / iw, 150 / ih);
-  const w = iw * scale;
-  const h = ih * scale;
+  const scale = Math.min(1200 / bounds.w, 150 / bounds.h);
+  const w = bounds.w * scale;
+  const h = bounds.h * scale;
   const x = (1200 - w) / 2;
   const y = (150 - h) / 2;
 
-  ctx.drawImage(workingUploadedBannerImage, 0, 0, iw, ih, x, y, w, h);
+  ctx.drawImage(
+    workingUploadedBannerImage,
+    bounds.x, bounds.y, bounds.w, bounds.h,
+    x, y, w, h
+  );
+
   return true;
 }
 
