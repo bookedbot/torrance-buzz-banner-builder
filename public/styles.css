@@ -296,3 +296,28 @@ button:hover { filter: brightness(.97); }
   margin:0 auto;
   object-fit:contain;
 }
+
+.uploaded-banner-button{width:100%;margin-top:10px}
+.uploaded-banner-tools{
+  margin-top:10px;
+  padding:10px;
+  border-radius:10px;
+  background:#f4f8fb;
+  border:1px solid #dce6ef;
+}
+.inline-check{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:6px 0;
+  font-size:12px;
+  font-weight:700;
+}
+.inline-check input{
+  width:auto;
+  margin:0;
+}
+.uploaded-banner-tools .ghost{
+  width:100%;
+  margin-top:8px;
+}
