@@ -66,7 +66,7 @@ app.post("/api/premium-icon", async (req, res) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2",
+        model: process.env.OPENAI_ICON_MODEL || "gpt-image-1",
         prompt,
         size: "1024x1024",
         quality: "low",
@@ -95,7 +95,7 @@ app.post("/api/premium-icon", async (req, res) => {
 
     return res.json({
       image: `data:image/png;base64,${imageBase64}`,
-      model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2"
+      model: process.env.OPENAI_ICON_MODEL || "gpt-image-1"
     });
   } catch (error) {
     console.error("Premium icon generation error", error);
