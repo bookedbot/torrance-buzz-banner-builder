@@ -16,6 +16,9 @@ let customIconImage = null;
 let customIconDataUrl = null;
 let customIconBannerKey = null;
 let iconVariant = 0;
+let premiumBannerImage = null;
+let premiumBannerDataUrl = null;
+let premiumBannerAccepted = false;
 const premiumAssets = {};
 const bitesAsset = new Image();
 bitesAsset.onload = () => {
@@ -1057,6 +1060,67 @@ function drawIcon(icon, variant = 0) {
   ctx.restore();
 }
 
+function drawPremiumBannerBackground() {
+  if (!premiumBannerImage || !premiumBannerImage.complete || !premiumBannerImage.naturalWidth) return false;
+
+  const iw = premiumBannerImage.naturalWidth;
+  const ih = premiumBannerImage.naturalHeight;
+  const targetRatio = 1200 / 150;
+  const imageRatio = iw / ih;
+
+  let sx = 0, sy = 0, sw = iw, sh = ih;
+
+  if (imageRatio > targetRatio) {
+    sw = ih * targetRatio;
+    sx = (iw - sw) / 2;
+  } else {
+    sh = iw / targetRatio;
+    sy = (ih - sh) / 2;
+  }
+
+  ctx.drawImage(premiumBannerImage, sx, sy, sw, sh, 0, 0, 1200, 150);
+
+  const shade = ctx.createLinearGradient(0, 0, 1200, 0);
+  shade.addColorStop(0, "rgba(1,10,38,.08)");
+  shade.addColorStop(.22, "rgba(1,10,38,.20)");
+  shade.addColorStop(.38, "rgba(1,10,38,.56)");
+  shade.addColorStop(.82, "rgba(1,10,38,.18)");
+  shade.addColorStop(1, "rgba(1,10,38,.12)");
+  ctx.fillStyle = shade;
+  ctx.fillRect(0, 0, 1200, 150);
+
+  return true;
+}
+
+function drawPremiumText(title, subtitle) {
+  const { first, last } = splitHeadline(title);
+  const headlineX = 300;
+  const maxWidth = 815;
+  const fontSize = fitTitle(first, last, maxWidth, 50, 28);
+
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "left";
+  ctx.font = `italic 800 ${fontSize}px Arial, sans-serif`;
+  ctx.shadowColor = "rgba(0,0,0,.55)";
+  ctx.shadowBlur = 4;
+  ctx.fillStyle = brand.cream;
+  ctx.fillText(first, headlineX, 58);
+
+  if (last) {
+    const firstWidth = ctx.measureText(first).width;
+    ctx.fillStyle = brand.orange;
+    ctx.fillText(last, headlineX + firstWidth + 17, 58);
+  }
+
+  ctx.shadowBlur = 2;
+  if (subtitle) {
+    ctx.font = "500 23px Arial, sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,.96)";
+    ctx.fillText(subtitle, headlineX + 34, 108);
+  }
+  ctx.shadowBlur = 0;
+}
+
 function render() {
   const title = $("title").value.trim() || "Newsletter Banner";
   const subtitle = $("subtitle").value.trim();
@@ -1065,6 +1129,13 @@ function render() {
   const layout = $("layout").value;
 
   ctx.clearRect(0, 0, 1200, 150);
+
+  if (premiumBannerImage) {
+    drawPremiumBannerBackground();
+    drawPremiumText(title, subtitle);
+    return;
+  }
+
   drawMasterBackground();
   drawAccent(accent);
   syncCustomIconToBanner();
@@ -1132,6 +1203,13 @@ function render() {
   }
 }
 
+function markPremiumNeedsRefresh() {
+  if (premiumBannerImage) {
+    premiumBannerAccepted = false;
+    $("premiumStatus").textContent = "Text or direction changed. Generate again if you want artwork matched to the new details.";
+  }
+}
+
 function saveCurrentState() {
   const saved = {
     title: $("title").value,
@@ -1142,7 +1220,8 @@ function saveCurrentState() {
     notes: $("notes").value,
     customIconDataUrl,
     customIconBannerKey,
-    iconVariant
+    iconVariant,
+    premiumBannerAccepted
   };
   localStorage.setItem("tbwLastPreset", JSON.stringify(saved));
 }
@@ -1153,6 +1232,7 @@ function saveCurrentState() {
       $("icon").value = inferIcon($("title").value, $("notes").value);
       iconVariant = 0;
     }
+    if (id === "title" || id === "subtitle") markPremiumNeedsRefresh();
     render();
     saveCurrentState();
   });
@@ -1168,6 +1248,7 @@ function saveCurrentState() {
 $("notes").addEventListener("input", () => {
   const suggested = inferIcon($("title").value, $("notes").value);
   if (suggested) $("icon").value = suggested;
+  markPremiumNeedsRefresh();
   render();
   saveCurrentState();
 });
@@ -1242,6 +1323,67 @@ $("reference").addEventListener("change", (event) => {
   };
 
   reader.readAsDataURL(file);
+});
+
+async function generatePremiumBanner() {
+  const button = $("generatePremium");
+  const status = $("premiumStatus");
+  const actions = $("premiumActions");
+
+  button.disabled = true;
+  status.textContent = "Creating premium banner artwork… this can take a little while.";
+  actions.hidden = true;
+
+  try {
+    const response = await fetch("/api/premium-banner", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: $("title").value,
+        subtitle: $("subtitle").value,
+        notes: $("notes").value
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (data.error === "missing_api_key") {
+        status.textContent = "Premium Banner is ready, but an OpenAI API key must be added once in Railway before image generation can run.";
+      } else {
+        status.textContent = data.message || "Premium banner generation failed.";
+      }
+      return;
+    }
+
+    const image = new Image();
+    image.onload = () => {
+      premiumBannerImage = image;
+      premiumBannerDataUrl = data.image;
+      premiumBannerAccepted = false;
+      render();
+      actions.hidden = false;
+      status.textContent = "Premium banner generated. Keep it or generate another.";
+    };
+    image.onerror = () => {
+      status.textContent = "The generated artwork could not be loaded.";
+    };
+    image.src = data.image;
+  } catch (error) {
+    status.textContent = "Premium banner generation could not connect.";
+  } finally {
+    button.disabled = false;
+  }
+}
+
+$("generatePremium").addEventListener("click", generatePremiumBanner);
+$("generateAnother").addEventListener("click", generatePremiumBanner);
+
+$("usePremium").addEventListener("click", () => {
+  if (!premiumBannerImage) return;
+  premiumBannerAccepted = true;
+  $("premiumStatus").textContent = "Premium banner selected. Use Download PNG when ready.";
+  saveCurrentState();
 });
 
 $("assist").addEventListener("click", async () => {
