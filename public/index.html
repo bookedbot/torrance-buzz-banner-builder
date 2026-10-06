@@ -122,6 +122,20 @@
           </div>
           <input id="reference" type="file" accept="image/png,image/jpeg,image/webp" />
           <img id="referencePreview" alt="Style reference preview" hidden />
+
+          <button id="useUploadedBanner" class="secondary uploaded-banner-button" type="button" hidden>Use Uploaded Banner</button>
+
+          <div id="uploadedBannerTools" class="uploaded-banner-tools" hidden>
+            <label class="inline-check">
+              <input id="overlayUploadedText" type="checkbox" />
+              <span>Overlay title/subtitle</span>
+            </label>
+            <label class="inline-check">
+              <input id="overlayUploadedIcon" type="checkbox" />
+              <span>Overlay current icon</span>
+            </label>
+            <button id="stopUsingUploadedBanner" class="ghost" type="button">Stop Using Uploaded Banner</button>
+          </div>
         </div>
 
         <div class="actions">
