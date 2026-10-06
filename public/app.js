@@ -21,6 +21,8 @@ let premiumBannerDataUrl = null;
 let premiumBannerAccepted = false;
 let premiumIconDataUrl = null;
 let premiumIconImage = null;
+let workingUploadedBannerImage = null;
+let workingUploadedBannerDataUrl = null;
 const premiumAssets = {};
 const bitesAsset = new Image();
 bitesAsset.onload = () => {
@@ -1062,6 +1064,28 @@ function drawIcon(icon, variant = 0) {
   ctx.restore();
 }
 
+function drawWorkingUploadedBanner() {
+  if (!workingUploadedBannerImage || !workingUploadedBannerImage.complete || !workingUploadedBannerImage.naturalWidth) return false;
+
+  const iw = workingUploadedBannerImage.naturalWidth;
+  const ih = workingUploadedBannerImage.naturalHeight;
+  const targetRatio = 1200 / 150;
+  const imageRatio = iw / ih;
+
+  let sx = 0, sy = 0, sw = iw, sh = ih;
+
+  if (imageRatio > targetRatio) {
+    sw = ih * targetRatio;
+    sx = (iw - sw) / 2;
+  } else {
+    sh = iw / targetRatio;
+    sy = (ih - sh) / 2;
+  }
+
+  ctx.drawImage(workingUploadedBannerImage, sx, sy, sw, sh, 0, 0, 1200, 150);
+  return true;
+}
+
 function drawPremiumBannerBackground() {
   if (!premiumBannerImage || !premiumBannerImage.complete || !premiumBannerImage.naturalWidth) return false;
 
@@ -1131,6 +1155,21 @@ function render() {
   const layout = $("layout").value;
 
   ctx.clearRect(0, 0, 1200, 150);
+
+  if (workingUploadedBannerImage) {
+    drawWorkingUploadedBanner();
+
+    if ($("overlayUploadedIcon")?.checked) {
+      syncCustomIconToBanner();
+      if (!drawCustomIcon() && !drawPremiumAsset(icon)) drawIcon(icon, iconVariant);
+    }
+
+    if ($("overlayUploadedText")?.checked) {
+      drawPremiumText(title, subtitle);
+    }
+
+    return;
+  }
 
   if (premiumBannerImage) {
     drawPremiumBannerBackground();
@@ -1325,6 +1364,7 @@ $("reference").addEventListener("change", (event) => {
     referenceImage = reader.result;
     $("referencePreview").src = referenceImage;
     $("referencePreview").hidden = false;
+    $("useUploadedBanner").hidden = false;
 
     try {
       localStorage.setItem("tbwReference", referenceImage);
@@ -1336,6 +1376,43 @@ $("reference").addEventListener("change", (event) => {
 
   reader.readAsDataURL(file);
 });
+
+$("useUploadedBanner").addEventListener("click", () => {
+  if (!referenceImage) return;
+
+  const image = new Image();
+  image.onload = () => {
+    workingUploadedBannerImage = image;
+    workingUploadedBannerDataUrl = referenceImage;
+
+    // Uploaded-banner mode is separate from Premium Banner mode.
+    premiumBannerImage = null;
+    premiumBannerDataUrl = null;
+    premiumBannerAccepted = false;
+    $("premiumActions").hidden = true;
+
+    $("overlayUploadedText").checked = false;
+    $("overlayUploadedIcon").checked = false;
+    $("uploadedBannerTools").hidden = false;
+    $("useUploadedBanner").textContent = "Uploaded Banner In Use";
+
+    render();
+    $("assistStatus").textContent = "Uploaded banner is now the working canvas. Turn on only the overlays you want.";
+  };
+  image.src = referenceImage;
+});
+
+$("stopUsingUploadedBanner").addEventListener("click", () => {
+  workingUploadedBannerImage = null;
+  workingUploadedBannerDataUrl = null;
+  $("uploadedBannerTools").hidden = true;
+  $("useUploadedBanner").textContent = "Use Uploaded Banner";
+  render();
+  $("assistStatus").textContent = "Returned to the standard Banner Builder canvas.";
+});
+
+$("overlayUploadedText").addEventListener("change", render);
+$("overlayUploadedIcon").addEventListener("change", render);
 
 async function generatePremiumIcon() {
   const button = $("generatePremiumIcon");
@@ -1556,6 +1633,7 @@ try {
   if (referenceImage) {
     $("referencePreview").src = referenceImage;
     $("referencePreview").hidden = false;
+    $("useUploadedBanner").hidden = false;
   }
 
   const noteDrivenIcon = inferIcon($("title").value, $("notes").value);
